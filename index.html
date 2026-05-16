@@ -9,11 +9,11 @@
         :root {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
+            --text-color: #e0e0e0;         /* Warna tanggal biasa (Putih/Abu terang) */
             --text-muted: #a0a0a0;
             --wfh-dot: #2ec4b6;
-            --weekend-color: #f25c6e; 
-            --holiday-color: #ff9f1c; 
+            --weekend-color: #555555;      /* PERUBAHAN: Abu-abu lebih gelap untuk Sabtu-Minggu di mode gelap */
+            --holiday-color: #f25c6e;      /* PERUBAHAN: Warna MERAH untuk libur nasional/cuti */
             --today-border: #ffffff;
             --divider-color: #333333;
             --dropdown-bg: #252525;
@@ -23,11 +23,11 @@
         [data-theme="light"] {
             --bg-color: #f8f9fa;
             --card-bg: #ffffff;
-            --text-color: #212529;
+            --text-color: #212529;         /* Warna tanggal biasa (Hitam/Gelap) */
             --text-muted: #6c757d;
             --wfh-dot: #2ec4b6;
-            --weekend-color: #e71d36; 
-            --holiday-color: #ff9f1c; 
+            --weekend-color: #b0b0b0;      /* PERUBAHAN: Abu-abu soft untuk Sabtu-Minggu di mode terang */
+            --holiday-color: #e71d36;      /* PERUBAHAN: Warna MERAH solid untuk libur nasional/cuti */
             --today-border: #212529;
             --divider-color: #dee2e6;
             --dropdown-bg: #e9ecef;
@@ -168,16 +168,15 @@
             flex-direction: column;
         }
 
-        /* Layout judul bulan + info total libur */
         .month-title {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
             font-weight: bold;
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            padding: 0 4px;
         }
 
         /* Teks info libur kecil di sebelah kanan nama bulan */
@@ -187,8 +186,8 @@
             letter-spacing: normal;
             font-weight: 600;
             color: var(--holiday-color);
-            background-color: rgba(255, 159, 28, 0.15);
-            padding: 2px 6px;
+            background-color: rgba(242, 92, 110, 0.12);
+            padding: 2px 8px;
             border-radius: 10px;
         }
 
@@ -207,6 +206,7 @@
             padding-bottom: 5px;
         }
 
+        /* Nama hari Sabtu & Minggu ikut berwarna abu-abu gelap */
         .day-name.weekend-name {
             color: var(--weekend-color);
         }
@@ -224,16 +224,19 @@
             height: 40px;
         }
 
+        /* Sabtu & Minggu menjadi Abu-Abu Gelap */
         .weekend {
             color: var(--weekend-color);
-            font-weight: bold;
+            font-weight: normal; /* Dibuat normal agar tidak mencolok dibanding hari kerja */
         }
 
+        /* Libur nasional & cuti bersama di luar weekend diwarnai MERAH */
         .holiday {
             color: var(--holiday-color);
             font-weight: bold;
         }
 
+        /* Style WFH dengan dot kecil di bawah angka */
         .wfh::after {
             content: '';
             position: absolute;
@@ -249,6 +252,7 @@
             font-weight: 600;
         }
 
+        /* Penanda Hari Ini */
         .today {
             outline: 2px solid var(--today-border);
             outline-offset: -2px;
@@ -289,6 +293,7 @@
             min-width: 16px;
         }
         
+        /* Pewarnaan angka list di bawah mengikuti aturan baru */
         .holiday-day-num.is-weekend {
             color: var(--weekend-color);
         }
@@ -309,8 +314,8 @@
         <h1>CALENDAR PRO</h1>
         <div class="legend">
             <div class="legend-item"><div class="wfh-legend-dot"></div> Jadwal WFH</div>
-            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: bold; width: auto; height: auto;">Tgl Merah</div> Akhir Pekan (Sab-Ming)</div>
-            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: bold; width: auto; height: auto;">Tgl Oranye</div> Libur / Cuti Kerja</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: bold; width: auto; height: auto;">Tgl Merah</div> Libur Nasional / Cuti</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: bold; width: auto; height: auto;">Tgl Abu</div> Akhir Pekan (Sab-Ming)</div>
             <div class="legend-item"><div class="box" style="outline: 2px solid var(--today-border); outline-offset: -2px;"></div> Hari Ini</div>
         </div>
     </header>
@@ -399,7 +404,7 @@
         const tanggalHariIni = String(infoWaktuSekarang.getDate()).padStart(2, '0');
         const stringHariIni = `${tahunHariIni}-${bulanHariIni}-${tanggalHariIni}`;
 
-        // 4. Alokasi Render Elemen Kalender ke Target Div
+        // 4. Alokasi Render Elemen Kalender
         const mainContainer = document.getElementById("calendar");
         const historyContainer = document.getElementById("historyContainer");
         const historySection = document.getElementById("historySection");
@@ -410,7 +415,6 @@
             const monthCard = document.createElement("div");
             monthCard.className = "month-card";
 
-            // Membuat container title (Nama bulan akan digabung dengan tag angka total libur)
             const title = document.createElement("div");
             title.className = "month-title";
             
@@ -443,7 +447,7 @@
             }
 
             const currentMonthHolidays = [];
-            let weekdayHolidayCount = 0; // Counter baru khusus libur di luar sabtu-minggu
+            let weekdayHolidayCount = 0; 
 
             for (let d = 1; d <= totalDays; d++) {
                 const dayDiv = document.createElement("div");
@@ -461,11 +465,11 @@
 
                 if (isRedDay) {
                     if (isWeekend) {
-                        dayDiv.classList.add("weekend");
+                        dayDiv.classList.add("weekend"); // PERUBAHAN: Menjadi abu-abu gelap jika jatuh di sabtu/minggu
                         currentMonthHolidays.push({ tgl: d, nama: holidays2026[dateStr], type: "weekend" });
                     } else {
-                        dayDiv.classList.add("holiday");
-                        weekdayHolidayCount++; // Hanya bertambah jika libur jatuh di senin-jumat
+                        dayDiv.classList.add("holiday"); // PERUBAHAN: Menjadi MERAH jika jatuh di senin-jumat
+                        weekdayHolidayCount++; 
                         currentMonthHolidays.push({ tgl: d, nama: holidays2026[dateStr], type: "holiday" });
                     }
                 } else if (wfhDates.has(dateStr)) {
@@ -482,16 +486,15 @@
                 grid.appendChild(dayDiv);
             }
 
-            // PERUBAHAN BARU: Tambahkan badge tag jumlah libur di samping nama bulan
+            // Tag hitung total libur nasional kerja (Merah)
             const countTag = document.createElement("span");
             countTag.className = "holiday-count-tag";
-            countTag.innerText = `(${weekdayHolidayCount} Libur)`;
+            countTag.innerText = `${weekdayHolidayCount} Libur`; 
             title.appendChild(countTag);
             
             monthCard.appendChild(title);
             monthCard.appendChild(grid);
 
-            // Membuat List Keterangan Libur di bagian bawah kartu
             if (currentMonthHolidays.length > 0) {
                 const listDiv = document.createElement("div");
                 listDiv.className = "holiday-list";
