@@ -903,8 +903,16 @@
             updateNavigatorButtons(currentSelectedYear);
             generateCalendar(currentSelectedYear);
 
+            // Simpan lebar layar awal
+            let lastWidth = window.innerWidth;
+
             window.addEventListener("resize", () => {
-                generateCalendar(currentSelectedYear);
+                // Cek apakah lebar layarnya benar-benar berubah
+                if (window.innerWidth !== lastWidth) {
+                    lastWidth = window.innerWidth; // Update lebar terbaru
+                    generateCalendar(currentSelectedYear); // Jalankan render ulang
+                }
+                // Jika lebarnya sama (hanya tinggi yang berubah karena address bar HP), abaikan saja.
             });
 
             const historyToggleBtn =
