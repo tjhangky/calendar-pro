@@ -4,6 +4,12 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Kalender+</title>
+
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>"
+        />
+
         <style>
             @import url("https://fonts.googleapis.com/css2?family=Ledger&display=swap");
             @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap");
@@ -297,13 +303,13 @@
             }
 
             .weekend {
-                color: var(--weekend-color);
+                color: var(
+                    --weekend-color
+                ) !important; /* Memastikan weekend tetap warna kuning */
             }
 
             .holiday {
-                color: var(
-                    --holiday-color
-                ) !important; /* Prioritas warna merah */
+                color: var(--holiday-color);
             }
 
             .wfh::after {
@@ -743,15 +749,16 @@
                         const isRedDay = holidayKeys.includes(dateStr);
 
                         if (isRedDay) {
-                            dayDiv.classList.add("holiday");
-
                             if (isWeekend) {
+                                // JIKA HARI LIBUR JATUH DI SABTU/MINGGU -> DIKEMBALIKAN JADI WARNA KUNING (WEEKEND)
+                                dayDiv.classList.add("weekend");
                                 currentMonthHolidays.push({
                                     tgl: d,
                                     nama: currentYearHolidays[dateStr],
                                     type: "weekend",
                                 });
                             } else {
+                                dayDiv.classList.add("holiday");
                                 weekdayHolidayCount++;
                                 currentMonthHolidays.push({
                                     tgl: d,
@@ -832,10 +839,9 @@
                         monthCard.appendChild(listDiv);
                     }
 
-                    // KONDISI PENYARINGAN KANVAS UTAMA VS DROPDOWN (LOGIKA REFRESH LAYAR HP VS LAPTOP)
+                    // KONDISI PENYARINGAN KANVAS UTAMA VS DROPDOWN (LOGIKA HP VS LAPTOP)
                     if (year === tahunHariIni) {
                         if (isMobile) {
-                            // Di HP: Semua bulan sebelum bulan aktif saat ini masuk dropdown
                             if (m < infoWaktuSekarang.getMonth()) {
                                 historyContainer.appendChild(monthCard);
                                 hasHistoryMonths = true;
@@ -843,7 +849,6 @@
                                 mainContainer.appendChild(monthCard);
                             }
                         } else {
-                            // Di Laptop: Berfungsi seperti semula (Hanya bulan-bulan sebelum bulan lalu yang disembunyikan)
                             if (m < infoWaktuSekarang.getMonth() - 1) {
                                 historyContainer.appendChild(monthCard);
                                 hasHistoryMonths = true;
@@ -898,7 +903,6 @@
             updateNavigatorButtons(currentSelectedYear);
             generateCalendar(currentSelectedYear);
 
-            // Supaya saat browser laptop di-resize manual ke ukuran HP/sebaliknya layout-nya langsung menyesuaikan otomatis
             window.addEventListener("resize", () => {
                 generateCalendar(currentSelectedYear);
             });
