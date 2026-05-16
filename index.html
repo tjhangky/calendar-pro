@@ -5,26 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender Kerja & WFH 2026</title>
     <style>
-        /* Tema Terang (Default) */
+        /* TEMA GELAP (DEFAULT) */
         :root {
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-color: #212529;
-            --text-muted: #6c757d;
-            --wfh-dot: #2ec4b6; /* Warna titik WFH */
-            --holiday-color: #e71d36;
-            --today-border: #212529;
-        }
-
-        /* Tema Gelap */
-        [data-theme="dark"] {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
             --text-muted: #a0a0a0;
             --wfh-dot: #2ec4b6;
-            --holiday-color: #f25c6e;
+            --weekend-color: #f25c6e; 
+            --holiday-color: #ff9f1c; 
             --today-border: #ffffff;
+            --divider-color: #333333;
+            --dropdown-bg: #252525;
+        }
+
+        /* TEMA TERANG */
+        [data-theme="light"] {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --wfh-dot: #2ec4b6;
+            --weekend-color: #e71d36; 
+            --holiday-color: #ff9f1c; 
+            --today-border: #212529;
+            --divider-color: #dee2e6;
+            --dropdown-bg: #e9ecef;
         }
 
         body {
@@ -38,11 +44,10 @@
 
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             position: relative;
         }
 
-        /* Tombol Mode Gelap/Terang */
         .theme-toggle {
             position: absolute;
             top: 0;
@@ -89,7 +94,6 @@
             border-radius: 4px;
         }
         
-        /* Mini dot khusus legenda WFH */
         .wfh-legend-dot {
             width: 8px;
             height: 8px;
@@ -98,6 +102,54 @@
             margin: 4px;
         }
 
+        /* Dropdown Akordeon untuk Bulan Lalu */
+        .history-section {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+        }
+
+        .history-toggle-btn {
+            width: 100%;
+            background-color: var(--dropdown-bg);
+            color: var(--text-color);
+            border: 1px dashed var(--text-muted);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .history-toggle-btn:hover {
+            opacity: 0.9;
+        }
+
+        .history-toggle-btn::after {
+            content: '▼';
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .history-section.open .history-toggle-btn::after {
+            transform: rotate(180deg);
+        }
+
+        .history-container {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        /* Container utama untuk bulan-bulan aktif */
         .calendar-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -112,14 +164,32 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: background-color 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Layout judul bulan + info total libur */
         .month-title {
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
             font-weight: bold;
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        /* Teks info libur kecil di sebelah kanan nama bulan */
+        .holiday-count-tag {
+            font-size: 11px;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 600;
+            color: var(--holiday-color);
+            background-color: rgba(255, 159, 28, 0.15);
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
         .days-grid {
@@ -128,6 +198,7 @@
             gap: 5px;
             text-align: center;
             font-size: 14px;
+            margin-bottom: 15px;
         }
 
         .day-name {
@@ -137,12 +208,12 @@
         }
 
         .day-name.weekend-name {
-            color: var(--holiday-color);
+            color: var(--weekend-color);
         }
 
         .day {
             position: relative;
-            padding: 10px 0 14px 0; /* Memberi ruang di bawah untuk titik */
+            padding: 10px 0 14px 0;
             border-radius: 4px;
             font-weight: 500;
             display: flex;
@@ -153,13 +224,16 @@
             height: 40px;
         }
 
-        /* Warna merah untuk Tanggal Merah & Akhir Pekan (Hanya font teks) */
-        .holiday, .weekend {
+        .weekend {
+            color: var(--weekend-color);
+            font-weight: bold;
+        }
+
+        .holiday {
             color: var(--holiday-color);
             font-weight: bold;
         }
 
-        /* PERUBAHAN BARU: Style WFH tidak lagi memakai background menyala, melainkan dot kecil di bawah angka */
         .wfh::after {
             content: '';
             position: absolute;
@@ -170,13 +244,11 @@
             border-radius: 50%;
         }
         
-        /* Memastikan teks WFH tetap mengikuti warna dasar tema, bukan putih */
         .wfh {
             color: var(--text-color);
             font-weight: 600;
         }
 
-        /* Penanda Hari Ini */
         .today {
             outline: 2px solid var(--today-border);
             outline-offset: -2px;
@@ -187,31 +259,98 @@
         .empty {
             visibility: hidden;
         }
+
+        /* Daftar Hari Libur */
+        .holiday-list {
+            border-top: 1px solid var(--divider-color);
+            padding-top: 10px;
+            margin-top: auto;
+            font-size: 12px;
+        }
+
+        .holiday-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .holiday-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .holiday-day-num {
+            font-weight: 700;
+            min-width: 16px;
+        }
+        
+        .holiday-day-num.is-weekend {
+            color: var(--weekend-color);
+        }
+        
+        .holiday-day-num.is-holiday {
+            color: var(--holiday-color);
+        }
+
+        .holiday-name {
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <button class="theme-toggle" id="themeToggle">🌙 Gelap</button>
+        <button class="theme-toggle" id="themeToggle">☀️ Terang</button>
         <h1>CALENDAR PRO</h1>
         <div class="legend">
             <div class="legend-item"><div class="wfh-legend-dot"></div> Jadwal WFH</div>
-            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: bold; width: auto; height: auto;">Tgl Merah</div> Libur / Cuti / Akhir Pekan</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: bold; width: auto; height: auto;">Tgl Merah</div> Akhir Pekan (Sab-Ming)</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: bold; width: auto; height: auto;">Tgl Oranye</div> Libur / Cuti Kerja</div>
             <div class="legend-item"><div class="box" style="outline: 2px solid var(--today-border); outline-offset: -2px;"></div> Hari Ini</div>
         </div>
     </header>
+
+    <div class="history-section" id="historySection">
+        <button class="history-toggle-btn" id="historyToggleBtn">Lihat Bulan yang Lalu</button>
+        <div class="history-container" id="historyContainer"></div>
+    </div>
 
     <div class="calendar-container" id="calendar"></div>
 
     <script>
         // 1. Data Libur Nasional & Cuti Bersama Resmi Indonesia 2026
-        const holidays2026 = [
-            "2026-01-01", "2026-01-16", "2026-02-16", "2026-02-17", "2026-03-18", 
-            "2026-03-19", "2026-03-20", "2026-03-21", "2026-03-22", "2026-03-23", 
-            "2026-03-24", "2026-04-03", "2026-04-05", "2026-05-01", "2026-05-14", 
-            "2026-05-15", "2026-05-27", "2026-05-28", "2026-05-31", "2026-06-01", 
-            "2026-06-16", "2026-08-17", "2026-08-25", "2026-12-24", "2026-12-25"
-        ];
+        const holidays2026 = {
+            "2026-01-01": "Tahun Baru Masehi",
+            "2026-01-16": "Isra Mikraj Nabi Muhammad SAW",
+            "2026-02-16": "Cuti Bersama Tahun Baru Imlek",
+            "2026-02-17": "Tahun Baru Imlek 2577 Kongzili",
+            "2026-03-18": "Cuti Bersama Hari Suci Nyepi",
+            "2026-03-19": "Hari Suci Nyepi Tahun Baru Saka 1948",
+            "2026-03-20": "Cuti Bersama Idul Fitri 1447 H",
+            "2026-03-21": "Hari Raya Idul Fitri 1447 H",
+            "2026-03-22": "Hari Raya Idul Fitri 1447 H",
+            "2026-03-23": "Cuti Bersama Idul Fitri 1447 H",
+            "2026-03-24": "Cuti Bersama Idul Fitri 1447 H",
+            "2026-04-03": "Wafat Yesus Kristus",
+            "2026-04-05": "Hari Paskah",
+            "2026-05-01": "Hari Buruh Internasional",
+            "2026-05-14": "Kenaikan Yesus Kristus",
+            "2026-05-15": "Cuti Bersama Kenaikan Yesus Kristus",
+            "2026-05-27": "Hari Raya Idul Adha 1447 H",
+            "2026-05-28": "Cuti Bersama Idul Adha 1447 H",
+            "2026-05-31": "Hari Raya Waisak 2570 BE",
+            "2026-06-01": "Hari Lahir Pancasila",
+            "2026-06-16": "Tahun Baru Islam 1448 H",
+            "2026-08-17": "Hari Kemerdekaan Republik Indonesia",
+            "2026-08-25": "Maulid Nabi Muhammad SAW",
+            "2026-12-24": "Cuti Bersama Hari Raya Natal",
+            "2026-12-25": "Hari Raya Natal"
+        };
 
         const namaBulan = [
             "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -219,6 +358,7 @@
         ];
 
         const namaHari = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+        const holidayKeys = Object.keys(holidays2026);
 
         // 2. Logika Penentuan Tanggal WFH (Maju & Mundur dari basis data 12 Mei)
         const wfhDates = new Set();
@@ -231,7 +371,7 @@
             if (currentDate.getFullYear() !== 2026) break;
             const dateStr = currentDate.toISOString().split('T')[0];
             const dayOfWeek = currentDate.getDay();
-            if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays2026.includes(dateStr)) {
+            if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayKeys.includes(dateStr)) {
                 wfhCounter++;
                 if (wfhCounter === 4) { wfhDates.add(dateStr); wfhCounter = 0; }
             }
@@ -244,7 +384,7 @@
             if (currentDate.getFullYear() !== 2026) break;
             const dateStr = currentDate.toISOString().split('T')[0];
             const dayOfWeek = currentDate.getDay();
-            if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays2026.includes(dateStr)) {
+            if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayKeys.includes(dateStr)) {
                 wfhCounter++;
                 if (wfhCounter === 4) { wfhDates.add(dateStr); wfhCounter = 0; }
             }
@@ -259,21 +399,24 @@
         const tanggalHariIni = String(infoWaktuSekarang.getDate()).padStart(2, '0');
         const stringHariIni = `${tahunHariIni}-${bulanHariIni}-${tanggalHariIni}`;
 
-        // 4. Render Elemen Kalender ke HTML
-        const container = document.getElementById("calendar");
+        // 4. Alokasi Render Elemen Kalender ke Target Div
+        const mainContainer = document.getElementById("calendar");
+        const historyContainer = document.getElementById("historyContainer");
+        const historySection = document.getElementById("historySection");
+
+        let hasHistoryMonths = false;
 
         for (let m = 0; m < 12; m++) {
             const monthCard = document.createElement("div");
             monthCard.className = "month-card";
 
-            if (m < bulanSekarang - 1) {
-                monthCard.style.display = "none";
-            }
-
+            // Membuat container title (Nama bulan akan digabung dengan tag angka total libur)
             const title = document.createElement("div");
             title.className = "month-title";
-            title.innerText = namaBulan[m];
-            monthCard.appendChild(title);
+            
+            const monthNameSpan = document.createElement("span");
+            monthNameSpan.innerText = namaBulan[m];
+            title.appendChild(monthNameSpan);
 
             const grid = document.createElement("div");
             grid.className = "days-grid";
@@ -299,6 +442,9 @@
                 grid.appendChild(emptyDiv);
             }
 
+            const currentMonthHolidays = [];
+            let weekdayHolidayCount = 0; // Counter baru khusus libur di luar sabtu-minggu
+
             for (let d = 1; d <= totalDays; d++) {
                 const dayDiv = document.createElement("div");
                 dayDiv.className = "day";
@@ -310,11 +456,22 @@
                 const dateStr = localDate.toISOString().split('T')[0];
                 const dayOfWeek = checkDate.getDay();
 
-                if (holidays2026.includes(dateStr)) {
-                    dayDiv.classList.add("holiday");
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                const isRedDay = holidayKeys.includes(dateStr);
+
+                if (isRedDay) {
+                    if (isWeekend) {
+                        dayDiv.classList.add("weekend");
+                        currentMonthHolidays.push({ tgl: d, nama: holidays2026[dateStr], type: "weekend" });
+                    } else {
+                        dayDiv.classList.add("holiday");
+                        weekdayHolidayCount++; // Hanya bertambah jika libur jatuh di senin-jumat
+                        currentMonthHolidays.push({ tgl: d, nama: holidays2026[dateStr], type: "holiday" });
+                    }
                 } else if (wfhDates.has(dateStr)) {
                     dayDiv.classList.add("wfh");
-                } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    if (isWeekend) dayDiv.classList.add("weekend");
+                } else if (isWeekend) {
                     dayDiv.classList.add("weekend");
                 }
 
@@ -325,21 +482,85 @@
                 grid.appendChild(dayDiv);
             }
 
+            // PERUBAHAN BARU: Tambahkan badge tag jumlah libur di samping nama bulan
+            const countTag = document.createElement("span");
+            countTag.className = "holiday-count-tag";
+            countTag.innerText = `(${weekdayHolidayCount} Libur)`;
+            title.appendChild(countTag);
+            
+            monthCard.appendChild(title);
             monthCard.appendChild(grid);
-            container.appendChild(monthCard);
+
+            // Membuat List Keterangan Libur di bagian bawah kartu
+            if (currentMonthHolidays.length > 0) {
+                const listDiv = document.createElement("div");
+                listDiv.className = "holiday-list";
+
+                const listTitle = document.createElement("div");
+                listTitle.className = "holiday-title";
+                listTitle.innerText = "Hari Libur";
+                listDiv.appendChild(listTitle);
+
+                currentMonthHolidays.forEach(item => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "holiday-item";
+
+                    const numDiv = document.createElement("div");
+                    numDiv.className = "holiday-day-num";
+                    if (item.type === "weekend") {
+                        numDiv.classList.add("is-weekend");
+                    } else {
+                        numDiv.classList.add("is-holiday");
+                    }
+                    numDiv.innerText = item.tgl;
+
+                    const nameDiv = document.createElement("div");
+                    nameDiv.className = "holiday-name";
+                    nameDiv.innerText = item.nama;
+
+                    itemDiv.appendChild(numDiv);
+                    itemDiv.appendChild(nameDiv);
+                    listDiv.appendChild(itemDiv);
+                });
+
+                monthCard.appendChild(listDiv);
+            }
+
+            if (m < bulanSekarang - 1) {
+                historyContainer.appendChild(monthCard);
+                hasHistoryMonths = true;
+            } else {
+                mainContainer.appendChild(monthCard);
+            }
         }
 
-        // 5. Fitur Toggle Dark / Light Mode
+        if (!hasHistoryMonths) {
+            historySection.style.display = "none";
+        }
+
+        // Logika Interaksi Dropdown Akordeon
+        const historyToggleBtn = document.getElementById("historyToggleBtn");
+        historyToggleBtn.addEventListener("click", () => {
+            const isOpen = historySection.classList.contains("open");
+            if (isOpen) {
+                historySection.classList.remove("open");
+                historyContainer.style.display = "none";
+            } else {
+                historySection.classList.add("open");
+                historyContainer.style.display = "grid";
+            }
+        });
+
+        // Fitur Toggle Dark / Light Mode
         const toggleBtn = document.getElementById("themeToggle");
-        
         toggleBtn.addEventListener("click", () => {
             const currentTheme = document.documentElement.getAttribute("data-theme");
-            if (currentTheme === "dark") {
+            if (currentTheme === "light") {
                 document.documentElement.removeAttribute("data-theme");
-                toggleBtn.innerText = "🌙 Gelap";
-            } else {
-                document.documentElement.setAttribute("data-theme", "dark");
                 toggleBtn.innerText = "☀️ Terang";
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+                toggleBtn.innerText = "🌙 Gelap";
             }
         });
     </script>
