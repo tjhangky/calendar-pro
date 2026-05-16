@@ -15,14 +15,14 @@
                 --current-month-border: #bfa15f; /* Kuning Tua Redup */
                 --text-color: #cfe2fe;
                 --text-muted: #7a828a;
-                --wfh-dot: #15803d;
+                --wfh-dot: #bffc62;
                 --weekend-color: #bfa15f; /* Kuning Tua Redup Dark Mode */
-                --holiday-color: #ef4444;
+                --holiday-color: #ff6186;
                 --today-border: #bfa15f; /* Kuning Tua Redup */
                 --divider-color: #2d2d2d;
                 --dropdown-bg: #2a2a2a;
                 --nav-bg: #242424;
-                --nav-active: #3b82f6;
+                --nav-active: #bfa15f;
                 --nav-active-text: #ffffff;
                 --adjacent-color: #3a3a3a;
             }
@@ -30,19 +30,19 @@
             /* TEMA TERANG MATTE */
             [data-theme="light"] {
                 --bg-color: #f1f3f5;
-                --card-bg: #ffffff;
-                --card-border: #e9ecef;
+                --card-bg: #f4f3ee;
+                --card-border: #b1ada1;
                 --current-month-border: #a38238; /* Kuning Tua Redup */
                 --text-color: #1e293b;
                 --text-muted: #94a3b8;
-                --wfh-dot: #166534;
+                --wfh-dot: #426e01;
                 --weekend-color: #a38238; /* Kuning Tua Redup Light Mode */
-                --holiday-color: #ef4444;
+                --holiday-color: #ff6186;
                 --today-border: #a38238; /* Kuning Tua Redup */
                 --divider-color: #e2e8f0;
                 --dropdown-bg: #e2e8f0;
                 --nav-bg: #e2e8f0;
-                --nav-active: #1d4ed8;
+                --nav-active: #bfa15f;
                 --nav-active-text: #ffffff;
                 --adjacent-color: #cbd5e1;
             }
@@ -106,7 +106,7 @@
                 background-color: var(--nav-bg);
                 padding: 3px;
                 border-radius: 10px; /* Lebih Melengkung */
-                margin-bottom: 20px;
+                margin-bottom: 12px;
                 border: 1px solid var(--card-border);
                 gap: 10px;
             }
@@ -135,6 +135,15 @@
                 min-width: 50px;
                 text-align: center;
                 letter-spacing: 0.5px;
+            }
+
+            .holiday-summary-info {
+                font-size: 13px;
+                color: var(--text-muted);
+                letter-spacing: 1px;
+                margin-bottom: 20px;
+                text-align: center;
+                font-weight: 400;
             }
 
             .legend {
@@ -263,7 +272,7 @@
             .day {
                 position: relative;
                 border-radius: 6px; /* Lebih Melengkung */
-                font-weight: 400; /* Disamakan rata ketebalannya */
+                font-weight: 400;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -375,6 +384,10 @@
                     margin-left: 0;
                 }
 
+                .holiday-summary-info {
+                    text-align: left;
+                }
+
                 .legend {
                     justify-content: flex-start;
                 }
@@ -399,6 +412,10 @@
                 <button class="year-arrow-btn" onclick="adjustYear(1)">
                     ▶
                 </button>
+            </div>
+
+            <div class="holiday-summary-info" id="holidaySummary">
+                0 HARI LIBUR · 0 CUTI BERSAMA
             </div>
 
             <div class="legend">
@@ -560,7 +577,37 @@
             );
             const stringHariIni = `${tahunHariIni}-${String(bulanHariIni + 1).padStart(2, "0")}-${tanggalHariIni}`;
 
+            // Inisialisasi Tema dari LocalStorage saat halaman pertama kali dibuka
+            const savedTheme = localStorage.getItem("calendar-theme");
+            const toggleBtn = document.getElementById("themeToggle");
+            if (savedTheme === "light") {
+                document.documentElement.setAttribute("data-theme", "light");
+                toggleBtn.innerText = "🌙";
+            } else {
+                document.documentElement.removeAttribute("data-theme");
+                toggleBtn.innerText = "☀️";
+            }
+
+            function updateHolidaySummary(year) {
+                const yearData = holidaysDatabase[year] || {};
+                let liburNasionalCount = 0;
+                let cutiBersamaCount = 0;
+
+                Object.values(yearData).forEach((namaLibur) => {
+                    if (namaLibur.toLowerCase().includes("cuti bersama")) {
+                        cutiBersamaCount++;
+                    } else {
+                        liburNasionalCount++;
+                    }
+                });
+
+                document.getElementById("holidaySummary").innerText =
+                    `${liburNasionalCount} HARI LIBUR · ${cutiBersamaCount} CUTI BERSAMA`;
+            }
+
             function generateCalendar(year) {
+                updateHolidaySummary(year);
+
                 const mainContainer = document.getElementById("calendar");
                 const historyContainer =
                     document.getElementById("historyContainer");
@@ -825,18 +872,20 @@
                 }
             });
 
-            const toggleBtn = document.getElementById("themeToggle");
+            // Logika Toggle Tema dengan Penyimpanan ke LocalStorage
             toggleBtn.addEventListener("click", () => {
                 const currentTheme =
                     document.documentElement.getAttribute("data-theme");
                 if (currentTheme === "light") {
                     document.documentElement.removeAttribute("data-theme");
+                    localStorage.setItem("calendar-theme", "dark");
                     toggleBtn.innerText = "☀️";
                 } else {
                     document.documentElement.setAttribute(
                         "data-theme",
                         "light",
                     );
+                    localStorage.setItem("calendar-theme", "light");
                     toggleBtn.innerText = "🌙";
                 }
             });
