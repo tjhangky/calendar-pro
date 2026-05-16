@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender Kerja & WFH Pro - Matte Edition</title>
+    <title>Kalender Kerja & WFH Pro - Custom Matte</title>
     <style>
-        /* BALIK KE TEMA GELAP MATTE (MUTED BLUE) */
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+        /* TEMA GELAP MATTE */
         :root {
             --bg-color: #1a1a1a;
             --card-bg: #242424;
@@ -13,8 +15,8 @@
             --current-month-border: #3b82f6; 
             --text-color: #cfe2fe;
             --text-muted: #7a828a;
-            --wfh-dot: #60a5fa;
-            --weekend-color: #3b82f6;
+            --wfh-dot: #15803d;             
+            --weekend-color: #bfa15f;       /* Kuning Tua Redup Dark Mode */
             --holiday-color: #ef4444;
             --today-border: #3b82f6;
             --divider-color: #2d2d2d;
@@ -23,10 +25,9 @@
             --nav-active: #3b82f6;
             --nav-active-text: #ffffff;
             --adjacent-color: #3a3a3a;
-            --tag-bg: rgba(239, 68, 64, 0.08);
         }
 
-        /* BALIK KE TEMA TERANG MATTE */
+        /* TEMA TERANG MATTE */
         [data-theme="light"] {
             --bg-color: #f1f3f5;
             --card-bg: #ffffff;
@@ -34,8 +35,8 @@
             --current-month-border: #1d4ed8; 
             --text-color: #1e293b;
             --text-muted: #94a3b8;
-            --wfh-dot: #3b82f6;
-            --weekend-color: #1d4ed8;
+            --wfh-dot: #166534;             
+            --weekend-color: #a38238;       /* Kuning Tua Redup Light Mode */
             --holiday-color: #ef4444;
             --today-border: #1d4ed8;
             --divider-color: #e2e8f0;
@@ -44,11 +45,10 @@
             --nav-active: #1d4ed8;
             --nav-active-text: #ffffff;
             --adjacent-color: #cbd5e1;
-            --tag-bg: rgba(239, 68, 64, 0.05);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -66,7 +66,6 @@
             position: relative;
         }
 
-        /* FIX TOGGLE: Ikon bulat minimalis tanpa teks */
         .theme-toggle {
             position: absolute;
             top: 0;
@@ -92,41 +91,49 @@
 
         h1 {
             margin: 0 0 15px 0;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: -0.5px;
             font-size: 24px;
             text-align: center;
             width: 100%;
         }
 
-        .year-selector {
+        /* FIX NAVIGASI PANAH TAHUN */
+        .year-navigator {
             display: inline-flex;
+            align-items: center;
             background-color: var(--nav-bg);
             padding: 3px;
             border-radius: 6px;
             margin-bottom: 20px;
             border: 1px solid var(--card-border);
+            gap: 10px;
         }
 
-        .year-btn {
+        .year-arrow-btn {
             background: none;
             border: none;
-            color: var(--text-muted);
-            padding: 6px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.15s;
-        }
-
-        .year-btn:hover {
             color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: background-color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .year-btn.active {
-            background-color: var(--nav-active);
-            color: var(--nav-active-text);
+        .year-arrow-btn:hover {
+            background-color: var(--card-border);
+        }
+
+        #yearDisplay {
+            font-size: 15px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+            letter-spacing: 0.5px;
         }
 
         .legend {
@@ -164,6 +171,7 @@
         }
 
         .history-toggle-btn {
+            font-family: "Open Sans", sans-serif;
             width: 100%;
             background-color: var(--card-bg);
             color: var(--text-muted);
@@ -172,7 +180,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -219,17 +227,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 12px;
             font-size: 15px;
             letter-spacing: 0.5px;
         }
 
+        /* PERUBAHAN: Tag info jumlah libur bulanan diubah ke kuning tua redup */
         .holiday-count-tag {
             font-size: 11px;
-            font-weight: 500;
-            color: var(--holiday-color);
-            background-color: var(--tag-bg);
+            font-weight: 600;
+            color: var(--weekend-color); 
+            background-color: transparent; 
+            border: 1px solid var(--card-border);
             padding: 1px 8px;
             border-radius: 4px;
         }
@@ -239,15 +249,14 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 2.5px;
             text-align: center;
-            font-size: 13px;
             margin-bottom: 10px;
         }
 
         .day-name {
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-muted);
             padding-bottom: 6px;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .day {
@@ -259,10 +268,11 @@
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-            aspect-ratio: 1 / 1; /* Tetap kotak sempurna */
+            aspect-ratio: 1 / 1; 
             width: 100%;
             height: auto;
             padding: 0;
+            font-size: 14.5px;
         }
 
         .day.adjacent-month {
@@ -272,12 +282,12 @@
 
         .weekend {
             color: var(--weekend-color);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .holiday {
             color: var(--holiday-color);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .wfh::after {
@@ -297,14 +307,13 @@
         .today {
             background-color: var(--today-border);
             color: var(--nav-active-text) !important;
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .today.wfh::after {
             background-color: var(--nav-active-text);
         }
 
-        /* UKURAN LIST KETERANGAN LIBUR TETAP GEDE DIKIT (12.5px) */
         .holiday-list {
             border-top: 1px solid var(--divider-color);
             padding-top: 10px;
@@ -314,7 +323,7 @@
 
         .holiday-title {
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             margin-bottom: 6px;
@@ -328,7 +337,7 @@
         }
 
         .holiday-day-num {
-            font-weight: 600;
+            font-weight: 700;
             min-width: 16px;
         }
         
@@ -344,7 +353,6 @@
             color: var(--text-muted);
         }
 
-        /* FIX RESPONSIVE: Mencegah overlap komponen header di HP */
         @media (max-width: 768px) {
             header {
                 align-items: flex-start;
@@ -357,7 +365,7 @@
                 font-size: 22px;
             }
 
-            .year-selector {
+            .year-navigator {
                 margin-left: 0;
             }
 
@@ -377,15 +385,16 @@
         <button class="theme-toggle" id="themeToggle">☀️</button>
         <h1>CALENDAR PRO</h1>
         
-        <div class="year-selector">
-            <button class="year-btn active" onclick="switchYear(2026)">2026</button>
-            <button class="year-btn" onclick="switchYear(2027)">2027</button>
+        <div class="year-navigator">
+            <button class="year-arrow-btn" onclick="adjustYear(-1)">◀</button>
+            <span id="yearDisplay">2026</span>
+            <button class="year-arrow-btn" onclick="adjustYear(1)">▶</button>
         </div>
 
         <div class="legend">
             <div class="legend-item"><div class="wfh-legend-dot"></div> Jadwal WFH</div>
             <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: 600; width: auto; height: auto;">Tgl Merah</div> Libur Nasional</div>
-            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: 600; width: auto; height: auto;">Tgl Biru</div> Akhir Pekan</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: 600; width: auto; height: auto;">Tgl Kuning</div> Akhir Pekan</div>
             <div class="legend-item"><div class="box" style="background: var(--nav-active); width: 10px; height: 10px;"></div> Hari Ini</div>
         </div>
     </header>
@@ -399,6 +408,7 @@
 
     <script>
         const holidaysDatabase = {
+            2025: { "2025-01-01": "Tahun Baru Masehi", "2025-12-25": "Hari Raya Natal" }, // Fallback database diperluas spontan
             2026: {
                 "2026-01-01": "Tahun Baru Masehi", "2026-01-16": "Isra Mikraj Nabi Muhammad SAW",
                 "2026-02-16": "Cuti Bersama Tahun Baru Imlek", "2026-02-17": "Tahun Baru Imlek 2577 Kongzili",
@@ -427,7 +437,8 @@
                 "2027-06-01": "Hari Lahir Pancasila", "2027-06-06": "Tahun Baru Islam 1449 H",
                 "2027-08-17": "Hari Kemerdekaan Republik Indonesia", "2027-08-15": "Maulid Nabi Muhammad SAW",
                 "2027-12-24": "Cuti Bersama Hari Raya Natal", "2027-12-25": "Hari Raya Natal"
-            }
+            },
+            2028: { "2028-01-01": "Tahun Baru Masehi", "2028-12-25": "Hari Raya Natal" }
         };
 
         let currentSelectedYear = 2026;
@@ -455,17 +466,17 @@
             const currentYearHolidays = holidaysDatabase[year] || {};
             const holidayKeys = Object.keys(currentYearHolidays);
 
+            // Perhitungan WFH Konstan berbasis jangkar awal (2026-05-12)
             const wfhDates = new Set();
             let loopDate = new Date("2026-05-12");
             wfhDates.add("2026-05-12");
 
             let wfhCounter = 0;
-            while (loopDate.getFullYear() <= 2027) {
+            while (loopDate.getFullYear() <= 2028) {
                 loopDate.setDate(loopDate.getDate() + 1);
-                if (loopDate.getFullYear() > 2027) break;
+                if (loopDate.getFullYear() > 2028) break;
                 const dateStr = loopDate.toISOString().split('T')[0];
                 const dayOfWeek = loopDate.getDay();
-                
                 const loopYear = loopDate.getFullYear();
                 const yearHolidays = holidaysDatabase[loopYear] || {};
                 
@@ -477,12 +488,11 @@
 
             loopDate = new Date("2026-05-12");
             wfhCounter = 0;
-            while (loopDate.getFullYear() >= 2026) {
+            while (loopDate.getFullYear() >= 2025) {
                 loopDate.setDate(loopDate.getDate() - 1);
-                if (loopDate.getFullYear() < 2026) break;
+                if (loopDate.getFullYear() < 2025) break;
                 const dateStr = loopDate.toISOString().split('T')[0];
                 const dayOfWeek = loopDate.getDay();
-                
                 const loopYear = loopDate.getFullYear();
                 const yearHolidays = holidaysDatabase[loopYear] || {};
 
@@ -644,13 +654,11 @@
             }
         }
 
-        function switchYear(year) {
-            currentSelectedYear = year;
-            document.querySelectorAll(".year-btn").forEach(btn => {
-                if(btn.innerText == year) btn.classList.add("active");
-                else btn.classList.remove("active");
-            });
-            generateCalendar(year);
+        /* JAVASCRIPT BARU: Mengatur navigasi ganti tahun via panah */
+        function adjustYear(offset) {
+            currentSelectedYear += offset;
+            document.getElementById("yearDisplay").innerText = currentSelectedYear;
+            generateCalendar(currentSelectedYear);
         }
 
         generateCalendar(currentSelectedYear);
