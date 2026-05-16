@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender Kerja & WFH Pro - Matte Edition</title>
     <style>
-        /* TEMA GELAP MATTE (DEFAULT) */
+        /* BALIK KE TEMA GELAP MATTE (MUTED BLUE) */
         :root {
             --bg-color: #1a1a1a;
             --card-bg: #242424;
             --card-border: #2d2d2d;
-            --current-month-border: #3b82f6; /* Border 2px untuk bulan ini */
+            --current-month-border: #3b82f6; 
             --text-color: #cfe2fe;
             --text-muted: #7a828a;
             --wfh-dot: #60a5fa;
@@ -26,12 +26,12 @@
             --tag-bg: rgba(239, 68, 64, 0.08);
         }
 
-        /* TEMA TERANG MATTE */
+        /* BALIK KE TEMA TERANG MATTE */
         [data-theme="light"] {
             --bg-color: #f1f3f5;
             --card-bg: #ffffff;
             --card-border: #e9ecef;
-            --current-month-border: #1d4ed8; /* Border 2px untuk bulan ini */
+            --current-month-border: #1d4ed8; 
             --text-color: #1e293b;
             --text-muted: #94a3b8;
             --wfh-dot: #3b82f6;
@@ -58,24 +58,32 @@
         }
 
         header {
-            text-align: center;
-            margin-bottom: 30px;
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
         }
 
+        /* FIX TOGGLE: Ikon bulat minimalis tanpa teks */
         .theme-toggle {
             position: absolute;
             top: 0;
-            right: 10px;
+            right: 0;
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--card-border);
-            padding: 6px 14px;
-            border-radius: 6px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s;
+            padding: 0;
         }
         
         .theme-toggle:hover {
@@ -87,6 +95,8 @@
             font-weight: 600;
             letter-spacing: -0.5px;
             font-size: 24px;
+            text-align: center;
+            width: 100%;
         }
 
         .year-selector {
@@ -178,7 +188,6 @@
             transform: rotate(180deg);
         }
 
-        /* GRID DIKUNCI 3 KOLOM UTK SCREEN LEBAR */
         .history-container, .calendar-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -202,7 +211,6 @@
             box-sizing: border-box;
         }
 
-        /* Class khusus untuk menandai kotak bulan ini */
         .month-card.current-month {
             border: 2px solid var(--current-month-border);
         }
@@ -212,7 +220,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-size: 15px;
             letter-spacing: 0.5px;
         }
@@ -229,7 +237,7 @@
         .days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 2.5px;
             text-align: center;
             font-size: 13px;
             margin-bottom: 10px;
@@ -238,13 +246,12 @@
         .day-name {
             font-weight: 500;
             color: var(--text-muted);
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             font-size: 12px;
         }
 
         .day {
             position: relative;
-            padding: 8px 0;
             border-radius: 4px;
             font-weight: 400;
             display: flex;
@@ -252,7 +259,10 @@
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-            height: 36px;
+            aspect-ratio: 1 / 1; /* Tetap kotak sempurna */
+            width: 100%;
+            height: auto;
+            padding: 0;
         }
 
         .day.adjacent-month {
@@ -273,7 +283,7 @@
         .wfh::after {
             content: '';
             position: absolute;
-            bottom: 4px;
+            bottom: 4px; 
             width: 5px;
             height: 5px;
             background-color: var(--wfh-dot);
@@ -294,31 +304,32 @@
             background-color: var(--nav-active-text);
         }
 
+        /* UKURAN LIST KETERANGAN LIBUR TETAP GEDE DIKIT (12.5px) */
         .holiday-list {
             border-top: 1px solid var(--divider-color);
             padding-top: 10px;
             margin-top: auto;
-            font-size: 11px;
+            font-size: 12.5px; 
         }
 
         .holiday-title {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .holiday-item {
             display: flex;
-            gap: 6px;
-            margin-bottom: 3px;
-            line-height: 1.3;
+            gap: 8px;
+            margin-bottom: 4px;
+            line-height: 1.4;
         }
 
         .holiday-day-num {
             font-weight: 600;
-            min-width: 14px;
+            min-width: 16px;
         }
         
         .holiday-day-num.is-weekend {
@@ -333,8 +344,27 @@
             color: var(--text-muted);
         }
 
-        /* RESPONSIVE: Otomatis 1 kolom jika dibuka di HP layar kecil */
+        /* FIX RESPONSIVE: Mencegah overlap komponen header di HP */
         @media (max-width: 768px) {
+            header {
+                align-items: flex-start;
+                padding-right: 50px; 
+                box-sizing: border-box;
+            }
+            
+            h1 {
+                text-align: left;
+                font-size: 22px;
+            }
+
+            .year-selector {
+                margin-left: 0;
+            }
+
+            .legend {
+                justify-content: flex-start;
+            }
+
             .history-container, .calendar-container {
                 grid-template-columns: 1fr;
             }
@@ -344,7 +374,7 @@
 <body>
 
     <header>
-        <button class="theme-toggle" id="themeToggle">☀️ Terang</button>
+        <button class="theme-toggle" id="themeToggle">☀️</button>
         <h1>CALENDAR PRO</h1>
         
         <div class="year-selector">
@@ -410,7 +440,7 @@
 
         const infoWaktuSekarang = new Date();
         const tahunHariIni = infoWaktuSekarang.getFullYear();
-        const bulanHariIni = infoWaktuSekarang.getMonth(); // Index 0-11
+        const bulanHariIni = infoWaktuSekarang.getMonth(); 
         const tanggalHariIni = String(infoWaktuSekarang.getDate()).padStart(2, '0');
         const stringHariIni = `${tahunHariIni}-${String(bulanHariIni + 1).padStart(2, '0')}-${tanggalHariIni}`;
 
@@ -468,7 +498,6 @@
                 const monthCard = document.createElement("div");
                 monthCard.className = "month-card";
 
-                // Tambahkan kelas khusus "current-month" jika ini adalah bulan berjalan di tahun berjalan
                 if (year === tahunHariIni && m === bulanHariIni) {
                     monthCard.classList.add("current-month");
                 }
@@ -646,10 +675,10 @@
             const currentTheme = document.documentElement.getAttribute("data-theme");
             if (currentTheme === "light") {
                 document.documentElement.removeAttribute("data-theme");
-                toggleBtn.innerText = "☀️ Terang";
+                toggleBtn.innerText = "☀️";
             } else {
                 document.documentElement.setAttribute("data-theme", "light");
-                toggleBtn.innerText = "🌙 Gelap";
+                toggleBtn.innerText = "🌙";
             }
         });
     </script>
