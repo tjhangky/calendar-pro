@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Kalender Kerja & WFH Pro - Custom Matte</title>
+        <title>Kalender+</title>
         <style>
             @import url("https://fonts.googleapis.com/css2?family=Ledger&display=swap");
             @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap");
@@ -684,6 +684,7 @@
                 }
 
                 let hasHistoryMonths = false;
+                const isMobile = window.innerWidth <= 768; // Deteksi versi HP vs Laptop
 
                 for (let m = 0; m < 12; m++) {
                     const monthCard = document.createElement("div");
@@ -742,9 +743,7 @@
                         const isRedDay = holidayKeys.includes(dateStr);
 
                         if (isRedDay) {
-                            dayDiv.classList.add(
-                                "holiday",
-                            ); /* Sab/Minggu libur nasional otomatis jadi merah */
+                            dayDiv.classList.add("holiday");
 
                             if (isWeekend) {
                                 currentMonthHolidays.push({
@@ -833,12 +832,25 @@
                         monthCard.appendChild(listDiv);
                     }
 
-                    if (
-                        year === tahunHariIni &&
-                        m < infoWaktuSekarang.getMonth() - 1
-                    ) {
-                        historyContainer.appendChild(monthCard);
-                        hasHistoryMonths = true;
+                    // KONDISI PENYARINGAN KANVAS UTAMA VS DROPDOWN (LOGIKA REFRESH LAYAR HP VS LAPTOP)
+                    if (year === tahunHariIni) {
+                        if (isMobile) {
+                            // Di HP: Semua bulan sebelum bulan aktif saat ini masuk dropdown
+                            if (m < infoWaktuSekarang.getMonth()) {
+                                historyContainer.appendChild(monthCard);
+                                hasHistoryMonths = true;
+                            } else {
+                                mainContainer.appendChild(monthCard);
+                            }
+                        } else {
+                            // Di Laptop: Berfungsi seperti semula (Hanya bulan-bulan sebelum bulan lalu yang disembunyikan)
+                            if (m < infoWaktuSekarang.getMonth() - 1) {
+                                historyContainer.appendChild(monthCard);
+                                hasHistoryMonths = true;
+                            } else {
+                                mainContainer.appendChild(monthCard);
+                            }
+                        }
                     } else if (year < tahunHariIni) {
                         historyContainer.appendChild(monthCard);
                         hasHistoryMonths = true;
@@ -885,6 +897,11 @@
             // Jalankan inisialisasi awal kalender
             updateNavigatorButtons(currentSelectedYear);
             generateCalendar(currentSelectedYear);
+
+            // Supaya saat browser laptop di-resize manual ke ukuran HP/sebaliknya layout-nya langsung menyesuaikan otomatis
+            window.addEventListener("resize", () => {
+                generateCalendar(currentSelectedYear);
+            });
 
             const historyToggleBtn =
                 document.getElementById("historyToggleBtn");
