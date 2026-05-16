@@ -66,6 +66,8 @@
                 flex-direction: column;
                 align-items: center;
                 position: relative;
+                padding: 0 60px; /* Memberikan ruang agar tidak menabrak toggle */
+                box-sizing: border-box;
             }
 
             .theme-toggle {
@@ -85,6 +87,7 @@
                 justify-content: center;
                 transition: all 0.2s;
                 padding: 0;
+                z-index: 20;
             }
 
             .theme-toggle:hover {
@@ -105,9 +108,10 @@
                 align-items: center;
                 justify-content: space-between;
                 width: 100%;
-                max-width: 1200px; /* Menyesuaikan lebar maksimal kalender */
+                max-width: 1200px;
                 margin: 0 auto 20px auto;
                 gap: 15px;
+                position: relative;
             }
 
             .year-arrow-btn {
@@ -121,6 +125,8 @@
                 padding: 8px 16px;
                 border-radius: 8px;
                 transition: all 0.15s ease;
+                flex-shrink: 0;
+                min-width: 90px;
             }
 
             .year-arrow-btn:hover {
@@ -129,11 +135,12 @@
             }
 
             #yearDisplay {
-                font-family:
-                    "Ledger", "Times New Roman", serif; /* Menggunakan font serif sesuai gambar */
-                font-size: 26px; /* Lebih besar dan elegan */
+                font-family: "Ledger", "Times New Roman", serif;
+                font-size: 26px;
                 font-weight: 400;
                 letter-spacing: 0.5px;
+                text-align: center;
+                flex-grow: 1;
             }
 
             .holiday-summary-info {
@@ -186,7 +193,7 @@
                 color: var(--text-muted);
                 border: 1px solid var(--card-border);
                 padding: 10px;
-                border-radius: 8px; /* Lebih Melengkung */
+                border-radius: 8px;
                 cursor: pointer;
                 font-size: 13px;
                 font-weight: 600;
@@ -223,7 +230,7 @@
                 background: var(--card-bg);
                 border: 1px solid var(--card-border);
                 padding: 15px;
-                border-radius: 12px; /* Lebih Melengkung */
+                border-radius: 12px;
                 display: flex;
                 flex-direction: column;
                 box-sizing: border-box;
@@ -250,7 +257,7 @@
                 background-color: transparent;
                 border: 1px solid var(--card-border);
                 padding: 1px 8px;
-                border-radius: 6px; /* Lebih Melengkung */
+                border-radius: 6px;
             }
 
             .days-grid {
@@ -270,7 +277,7 @@
 
             .day {
                 position: relative;
-                border-radius: 6px; /* Lebih Melengkung */
+                border-radius: 6px;
                 font-weight: 400;
                 display: flex;
                 flex-direction: column;
@@ -294,7 +301,9 @@
             }
 
             .holiday {
-                color: var(--holiday-color);
+                color: var(
+                    --holiday-color
+                ) !important; /* Prioritas warna merah */
             }
 
             .wfh::after {
@@ -312,21 +321,16 @@
             }
 
             .today {
-                background-color: var(
-                    --today-border
-                ) !important; /* Fill warna kuning */
-                color: var(
-                    --bg-color
-                ) !important; /* Angka mengikuti warna background agar kontras */
-                font-weight: 700 !important; /* Tanggal hari ini bold */
+                background-color: var(--today-border) !important;
+                color: var(--bg-color) !important;
+                font-weight: 700 !important;
                 border: none;
-                border-radius: 50% !important; /* Mengubah kotak menjadi bulat sempurna */
+                border-radius: 50% !important; /* Bentuk Bulat */
+                z-index: 10;
             }
 
             .today.wfh::after {
-                background-color: var(
-                    --bg-color
-                ); /* Dot mengikuti warna background agar kontras */
+                background-color: var(--bg-color);
             }
 
             .holiday-list {
@@ -370,26 +374,28 @@
 
             @media (max-width: 768px) {
                 header {
-                    align-items: flex-start;
-                    padding-right: 50px;
+                    align-items: center;
+                    padding: 0 15px;
                     box-sizing: border-box;
                 }
 
+                .theme-toggle {
+                    position: relative;
+                    margin-bottom: 15px;
+                    align-self: flex-end;
+                }
+
                 h1 {
-                    text-align: left;
+                    text-align: center;
                     font-size: 22px;
                 }
 
-                .year-navigator {
-                    margin-left: 0;
-                }
-
                 .holiday-summary-info {
-                    text-align: left;
+                    text-align: center;
                 }
 
                 .legend {
-                    justify-content: flex-start;
+                    justify-content: center;
                 }
 
                 .history-container,
@@ -736,15 +742,17 @@
                         const isRedDay = holidayKeys.includes(dateStr);
 
                         if (isRedDay) {
+                            dayDiv.classList.add(
+                                "holiday",
+                            ); /* Sab/Minggu libur nasional otomatis jadi merah */
+
                             if (isWeekend) {
-                                dayDiv.classList.add("weekend");
                                 currentMonthHolidays.push({
                                     tgl: d,
                                     nama: currentYearHolidays[dateStr],
                                     type: "weekend",
                                 });
                             } else {
-                                dayDiv.classList.add("holiday");
                                 weekdayHolidayCount++;
                                 currentMonthHolidays.push({
                                     tgl: d,
@@ -852,11 +860,9 @@
                 const prevBtn = document.getElementById("prevYearBtn");
                 const nextBtn = document.getElementById("nextYearBtn");
 
-                // Mengatur teks tombol dinamis berdasarkan tahun aktif
                 prevBtn.innerText = `← ${year - 1}`;
                 nextBtn.innerText = `${year + 1} →`;
 
-                // Opsional: Sembunyikan atau matikan tombol jika di luar batas database (2025-2028)
                 prevBtn.style.visibility =
                     year - 1 >= 2025 ? "visible" : "hidden";
                 nextBtn.style.visibility =
@@ -871,14 +877,13 @@
                     currentSelectedYear += offset;
                     document.getElementById("yearDisplay").innerText =
                         currentSelectedYear;
-                    updateNavigatorButtons(currentSelectedYear); // Update teks tombolnya
+                    updateNavigatorButtons(currentSelectedYear);
                     generateCalendar(currentSelectedYear);
                 }
             }
 
-            // Panggil fungsi ini sekali di awal (taruh tepat di bawah generateCalendar(currentSelectedYear) pertama kali)
+            // Jalankan inisialisasi awal kalender
             updateNavigatorButtons(currentSelectedYear);
-
             generateCalendar(currentSelectedYear);
 
             const historyToggleBtn =
@@ -899,7 +904,6 @@
                 }
             });
 
-            // Logika Toggle Tema dengan Penyimpanan ke LocalStorage
             toggleBtn.addEventListener("click", () => {
                 const currentTheme =
                     document.documentElement.getAttribute("data-theme");
