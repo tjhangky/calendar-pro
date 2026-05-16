@@ -3,34 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender Kerja & WFH 2026</title>
+    <title>Kalender Kerja & WFH Pro - Matte Edition</title>
     <style>
-        /* TEMA GELAP (DEFAULT) */
+        /* TEMA GELAP MATTE (DEFAULT) */
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;         /* Warna tanggal biasa (Putih/Abu terang) */
-            --text-muted: #a0a0a0;
-            --wfh-dot: #2ec4b6;
-            --weekend-color: #555555;      /* PERUBAHAN: Abu-abu lebih gelap untuk Sabtu-Minggu di mode gelap */
-            --holiday-color: #f25c6e;      /* PERUBAHAN: Warna MERAH untuk libur nasional/cuti */
-            --today-border: #ffffff;
-            --divider-color: #333333;
-            --dropdown-bg: #252525;
+            --bg-color: #1a1a1a;
+            --card-bg: #242424;
+            --card-border: #2d2d2d;
+            --current-month-border: #3b82f6; /* Border 2px untuk bulan ini */
+            --text-color: #cfe2fe;
+            --text-muted: #7a828a;
+            --wfh-dot: #60a5fa;
+            --weekend-color: #3b82f6;
+            --holiday-color: #ef4444;
+            --today-border: #3b82f6;
+            --divider-color: #2d2d2d;
+            --dropdown-bg: #2a2a2a;
+            --nav-bg: #242424;
+            --nav-active: #3b82f6;
+            --nav-active-text: #ffffff;
+            --adjacent-color: #3a3a3a;
+            --tag-bg: rgba(239, 68, 64, 0.08);
         }
 
-        /* TEMA TERANG */
+        /* TEMA TERANG MATTE */
         [data-theme="light"] {
-            --bg-color: #f8f9fa;
+            --bg-color: #f1f3f5;
             --card-bg: #ffffff;
-            --text-color: #212529;         /* Warna tanggal biasa (Hitam/Gelap) */
-            --text-muted: #6c757d;
-            --wfh-dot: #2ec4b6;
-            --weekend-color: #b0b0b0;      /* PERUBAHAN: Abu-abu soft untuk Sabtu-Minggu di mode terang */
-            --holiday-color: #e71d36;      /* PERUBAHAN: Warna MERAH solid untuk libur nasional/cuti */
-            --today-border: #212529;
-            --divider-color: #dee2e6;
-            --dropdown-bg: #e9ecef;
+            --card-border: #e9ecef;
+            --current-month-border: #1d4ed8; /* Border 2px untuk bulan ini */
+            --text-color: #1e293b;
+            --text-muted: #94a3b8;
+            --wfh-dot: #3b82f6;
+            --weekend-color: #1d4ed8;
+            --holiday-color: #ef4444;
+            --today-border: #1d4ed8;
+            --divider-color: #e2e8f0;
+            --dropdown-bg: #e2e8f0;
+            --nav-bg: #e2e8f0;
+            --nav-active: #1d4ed8;
+            --nav-active-text: #ffffff;
+            --adjacent-color: #cbd5e1;
+            --tag-bg: rgba(239, 68, 64, 0.05);
         }
 
         body {
@@ -39,7 +53,8 @@
             color: var(--text-color);
             margin: 0;
             padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.2s, color 0.2s;
+            -webkit-font-smoothing: antialiased;
         }
 
         header {
@@ -54,246 +69,258 @@
             right: 10px;
             background: var(--card-bg);
             color: var(--text-color);
-            border: 1px solid var(--text-muted);
-            padding: 8px 14px;
-            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
         }
         
         .theme-toggle:hover {
-            opacity: 0.8;
+            background-color: var(--dropdown-bg);
         }
 
         h1 {
-            margin: 0 0 10px 0;
-            font-weight: 700;
+            margin: 0 0 15px 0;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            font-size: 24px;
+        }
+
+        .year-selector {
+            display: inline-flex;
+            background-color: var(--nav-bg);
+            padding: 3px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid var(--card-border);
+        }
+
+        .year-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+
+        .year-btn:hover {
+            color: var(--text-color);
+        }
+
+        .year-btn.active {
+            background-color: var(--nav-active);
+            color: var(--nav-active-text);
         }
 
         .legend {
             display: flex;
             justify-content: center;
             gap: 20px;
-            font-size: 14px;
-            margin-bottom: 20px;
+            font-size: 13px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
+            color: var(--text-muted);
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .box {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
         }
         
         .wfh-legend-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background-color: var(--wfh-dot);
             border-radius: 50%;
-            margin: 4px;
         }
 
-        /* Dropdown Akordeon untuk Bulan Lalu */
         .history-section {
             max-width: 1200px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 25px auto;
         }
 
         .history-toggle-btn {
             width: 100%;
-            background-color: var(--dropdown-bg);
-            color: var(--text-color);
-            border: 1px dashed var(--text-muted);
-            padding: 12px;
-            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 10px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 500;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
-            transition: background-color 0.3s;
-        }
-
-        .history-toggle-btn:hover {
-            opacity: 0.9;
         }
 
         .history-toggle-btn::after {
             content: '▼';
-            font-size: 10px;
-            transition: transform 0.3s;
+            font-size: 9px;
         }
 
         .history-section.open .history-toggle-btn::after {
             transform: rotate(180deg);
         }
 
-        .history-container {
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-        }
-
-        /* Container utama untuk bulan-bulan aktif */
-        .calendar-container {
+        /* GRID DIKUNCI 3 KOLOM UTK SCREEN LEBAR */
+        .history-container, .calendar-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
+        .history-container {
+            display: none;
+            margin-top: 15px;
+        }
+
         .month-card {
             background: var(--card-bg);
+            border: 1px solid var(--card-border);
             padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: background-color 0.3s;
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        /* Class khusus untuk menandai kotak bulan ini */
+        .month-card.current-month {
+            border: 2px solid var(--current-month-border);
         }
 
         .month-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0 4px;
+            font-size: 15px;
+            letter-spacing: 0.5px;
         }
 
-        /* Teks info libur kecil di sebelah kanan nama bulan */
         .holiday-count-tag {
             font-size: 11px;
-            text-transform: none;
-            letter-spacing: normal;
-            font-weight: 600;
+            font-weight: 500;
             color: var(--holiday-color);
-            background-color: rgba(242, 92, 110, 0.12);
-            padding: 2px 8px;
-            border-radius: 10px;
+            background-color: var(--tag-bg);
+            padding: 1px 8px;
+            border-radius: 4px;
         }
 
         .days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 4px;
             text-align: center;
-            font-size: 14px;
-            margin-bottom: 15px;
+            font-size: 13px;
+            margin-bottom: 10px;
         }
 
         .day-name {
-            font-weight: bold;
+            font-weight: 500;
             color: var(--text-muted);
-            padding-bottom: 5px;
-        }
-
-        /* Nama hari Sabtu & Minggu ikut berwarna abu-abu gelap */
-        .day-name.weekend-name {
-            color: var(--weekend-color);
+            padding-bottom: 8px;
+            font-size: 12px;
         }
 
         .day {
             position: relative;
-            padding: 10px 0 14px 0;
+            padding: 8px 0;
             border-radius: 4px;
-            font-weight: 500;
+            font-weight: 400;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-            height: 40px;
+            height: 36px;
         }
 
-        /* Sabtu & Minggu menjadi Abu-Abu Gelap */
+        .day.adjacent-month {
+            color: var(--adjacent-color) !important;
+            font-weight: 300 !important;
+        }
+
         .weekend {
             color: var(--weekend-color);
-            font-weight: normal; /* Dibuat normal agar tidak mencolok dibanding hari kerja */
+            font-weight: 500;
         }
 
-        /* Libur nasional & cuti bersama di luar weekend diwarnai MERAH */
         .holiday {
             color: var(--holiday-color);
-            font-weight: bold;
+            font-weight: 600;
         }
 
-        /* Style WFH dengan dot kecil di bawah angka */
         .wfh::after {
             content: '';
             position: absolute;
             bottom: 4px;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background-color: var(--wfh-dot);
             border-radius: 50%;
         }
         
         .wfh {
             color: var(--text-color);
+        }
+
+        .today {
+            background-color: var(--today-border);
+            color: var(--nav-active-text) !important;
             font-weight: 600;
         }
-
-        /* Penanda Hari Ini */
-        .today {
-            outline: 2px solid var(--today-border);
-            outline-offset: -2px;
-            font-weight: 800;
-            border-radius: 4px;
+        
+        .today.wfh::after {
+            background-color: var(--nav-active-text);
         }
 
-        .empty {
-            visibility: hidden;
-        }
-
-        /* Daftar Hari Libur */
         .holiday-list {
             border-top: 1px solid var(--divider-color);
             padding-top: 10px;
             margin-top: auto;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .holiday-title {
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 10px;
+            font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 0.5px;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .holiday-item {
             display: flex;
-            gap: 8px;
-            margin-bottom: 4px;
-            line-height: 1.4;
+            gap: 6px;
+            margin-bottom: 3px;
+            line-height: 1.3;
         }
 
         .holiday-day-num {
-            font-weight: 700;
-            min-width: 16px;
+            font-weight: 600;
+            min-width: 14px;
         }
         
-        /* Pewarnaan angka list di bawah mengikuti aturan baru */
         .holiday-day-num.is-weekend {
             color: var(--weekend-color);
         }
@@ -303,7 +330,14 @@
         }
 
         .holiday-name {
-            color: var(--text-color);
+            color: var(--text-muted);
+        }
+
+        /* RESPONSIVE: Otomatis 1 kolom jika dibuka di HP layar kecil */
+        @media (max-width: 768px) {
+            .history-container, .calendar-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -312,11 +346,17 @@
     <header>
         <button class="theme-toggle" id="themeToggle">☀️ Terang</button>
         <h1>CALENDAR PRO</h1>
+        
+        <div class="year-selector">
+            <button class="year-btn active" onclick="switchYear(2026)">2026</button>
+            <button class="year-btn" onclick="switchYear(2027)">2027</button>
+        </div>
+
         <div class="legend">
             <div class="legend-item"><div class="wfh-legend-dot"></div> Jadwal WFH</div>
-            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: bold; width: auto; height: auto;">Tgl Merah</div> Libur Nasional / Cuti</div>
-            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: bold; width: auto; height: auto;">Tgl Abu</div> Akhir Pekan (Sab-Ming)</div>
-            <div class="legend-item"><div class="box" style="outline: 2px solid var(--today-border); outline-offset: -2px;"></div> Hari Ini</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--holiday-color); font-weight: 600; width: auto; height: auto;">Tgl Merah</div> Libur Nasional</div>
+            <div class="legend-item"><div class="box" style="background: none; border: none; color: var(--weekend-color); font-weight: 600; width: auto; height: auto;">Tgl Biru</div> Akhir Pekan</div>
+            <div class="legend-item"><div class="box" style="background: var(--nav-active); width: 10px; height: 10px;"></div> Hari Ini</div>
         </div>
     </header>
 
@@ -328,223 +368,270 @@
     <div class="calendar-container" id="calendar"></div>
 
     <script>
-        // 1. Data Libur Nasional & Cuti Bersama Resmi Indonesia 2026
-        const holidays2026 = {
-            "2026-01-01": "Tahun Baru Masehi",
-            "2026-01-16": "Isra Mikraj Nabi Muhammad SAW",
-            "2026-02-16": "Cuti Bersama Tahun Baru Imlek",
-            "2026-02-17": "Tahun Baru Imlek 2577 Kongzili",
-            "2026-03-18": "Cuti Bersama Hari Suci Nyepi",
-            "2026-03-19": "Hari Suci Nyepi Tahun Baru Saka 1948",
-            "2026-03-20": "Cuti Bersama Idul Fitri 1447 H",
-            "2026-03-21": "Hari Raya Idul Fitri 1447 H",
-            "2026-03-22": "Hari Raya Idul Fitri 1447 H",
-            "2026-03-23": "Cuti Bersama Idul Fitri 1447 H",
-            "2026-03-24": "Cuti Bersama Idul Fitri 1447 H",
-            "2026-04-03": "Wafat Yesus Kristus",
-            "2026-04-05": "Hari Paskah",
-            "2026-05-01": "Hari Buruh Internasional",
-            "2026-05-14": "Kenaikan Yesus Kristus",
-            "2026-05-15": "Cuti Bersama Kenaikan Yesus Kristus",
-            "2026-05-27": "Hari Raya Idul Adha 1447 H",
-            "2026-05-28": "Cuti Bersama Idul Adha 1447 H",
-            "2026-05-31": "Hari Raya Waisak 2570 BE",
-            "2026-06-01": "Hari Lahir Pancasila",
-            "2026-06-16": "Tahun Baru Islam 1448 H",
-            "2026-08-17": "Hari Kemerdekaan Republik Indonesia",
-            "2026-08-25": "Maulid Nabi Muhammad SAW",
-            "2026-12-24": "Cuti Bersama Hari Raya Natal",
-            "2026-12-25": "Hari Raya Natal"
+        const holidaysDatabase = {
+            2026: {
+                "2026-01-01": "Tahun Baru Masehi", "2026-01-16": "Isra Mikraj Nabi Muhammad SAW",
+                "2026-02-16": "Cuti Bersama Tahun Baru Imlek", "2026-02-17": "Tahun Baru Imlek 2577 Kongzili",
+                "2026-03-18": "Cuti Bersama Hari Suci Nyepi", "2026-03-19": "Hari Suci Nyepi Tahun Baru Saka 1948",
+                "2026-03-20": "Cuti Bersama Idul Fitri 1447 H", "2026-03-21": "Hari Raya Idul Fitri 1447 H",
+                "2026-03-22": "Hari Raya Idul Fitri 1447 H", "2026-03-23": "Cuti Bersama Idul Fitri 1447 H",
+                "2026-03-24": "Cuti Bersama Idul Fitri 1447 H", "2026-04-03": "Wafat Yesus Kristus",
+                "2026-04-05": "Hari Paskah", "2026-05-01": "Hari Buruh Internasional",
+                "2026-05-14": "Kenaikan Yesus Kristus", "2026-05-15": "Cuti Bersama Kenaikan Yesus Kristus",
+                "2026-05-27": "Hari Raya Idul Adha 1447 H", "2026-05-28": "Cuti Bersama Idul Adha 1447 H",
+                "2026-05-31": "Hari Raya Waisak 2570 BE", "2026-06-01": "Hari Lahir Pancasila",
+                "2026-06-16": "Tahun Baru Islam 1448 H", "2026-08-17": "Hari Kemerdekaan Republik Indonesia",
+                "2026-08-25": "Maulid Nabi Muhammad SAW", "2026-12-24": "Cuti Bersama Hari Raya Natal",
+                "2026-12-25": "Hari Raya Natal"
+            },
+            2027: {
+                "2027-01-01": "Tahun Baru Masehi", "2027-01-06": "Isra Mikraj Nabi Muhammad SAW",
+                "2027-02-05": "Cuti Bersama Tahun Baru Imlek", "2027-02-06": "Tahun Baru Imlek 2578 Kongzili",
+                "2027-03-08": "Cuti Bersama Hari Suci Nyepi", "2027-03-09": "Hari Suci Nyepi Tahun Baru Saka 1949",
+                "2027-03-09": "Hari Raya Idul Fitri 1448 H", "2027-03-10": "Hari Raya Idul Fitri 1448 H",
+                "2027-03-11": "Cuti Bersama Idul Fitri", "2027-03-12": "Cuti Bersama Idul Fitri",
+                "2027-03-26": "Wafat Yesus Kristus", "2027-03-28": "Hari Paskah",
+                "2027-05-01": "Hari Buruh Internasional", "2027-05-06": "Kenaikan Yesus Kristus",
+                "2027-05-07": "Cuti Bersama Kenaikan Yesus Kristus", "2027-05-16": "Hari Raya Idul Adha 1448 H",
+                "2027-05-17": "Cuti Bersama Idul Adha", "2027-05-20": "Hari Raya Waisak 2571 BE",
+                "2027-06-01": "Hari Lahir Pancasila", "2027-06-06": "Tahun Baru Islam 1449 H",
+                "2027-08-17": "Hari Kemerdekaan Republik Indonesia", "2027-08-15": "Maulid Nabi Muhammad SAW",
+                "2027-12-24": "Cuti Bersama Hari Raya Natal", "2027-12-25": "Hari Raya Natal"
+            }
         };
+
+        let currentSelectedYear = 2026;
 
         const namaBulan = [
             "Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
-
         const namaHari = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
-        const holidayKeys = Object.keys(holidays2026);
 
-        // 2. Logika Penentuan Tanggal WFH (Maju & Mundur dari basis data 12 Mei)
-        const wfhDates = new Set();
-        let currentDate = new Date("2026-05-12");
-        wfhDates.add(currentDate.toISOString().split('T')[0]);
-
-        let wfhCounter = 0;
-        while (currentDate.getFullYear() === 2026) {
-            currentDate.setDate(currentDate.getDate() + 1);
-            if (currentDate.getFullYear() !== 2026) break;
-            const dateStr = currentDate.toISOString().split('T')[0];
-            const dayOfWeek = currentDate.getDay();
-            if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayKeys.includes(dateStr)) {
-                wfhCounter++;
-                if (wfhCounter === 4) { wfhDates.add(dateStr); wfhCounter = 0; }
-            }
-        }
-
-        currentDate = new Date("2026-05-12");
-        wfhCounter = 0;
-        while (currentDate.getFullYear() === 2026) {
-            currentDate.setDate(currentDate.getDate() - 1);
-            if (currentDate.getFullYear() !== 2026) break;
-            const dateStr = currentDate.toISOString().split('T')[0];
-            const dayOfWeek = currentDate.getDay();
-            if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayKeys.includes(dateStr)) {
-                wfhCounter++;
-                if (wfhCounter === 4) { wfhDates.add(dateStr); wfhCounter = 0; }
-            }
-        }
-
-        // 3. Ambil Informasi Bulan Saat Ini Secara Dinamis
         const infoWaktuSekarang = new Date();
-        const bulanSekarang = infoWaktuSekarang.getMonth(); 
-        
         const tahunHariIni = infoWaktuSekarang.getFullYear();
-        const bulanHariIni = String(infoWaktuSekarang.getMonth() + 1).padStart(2, '0');
+        const bulanHariIni = infoWaktuSekarang.getMonth(); // Index 0-11
         const tanggalHariIni = String(infoWaktuSekarang.getDate()).padStart(2, '0');
-        const stringHariIni = `${tahunHariIni}-${bulanHariIni}-${tanggalHariIni}`;
+        const stringHariIni = `${tahunHariIni}-${String(bulanHariIni + 1).padStart(2, '0')}-${tanggalHariIni}`;
 
-        // 4. Alokasi Render Elemen Kalender
-        const mainContainer = document.getElementById("calendar");
-        const historyContainer = document.getElementById("historyContainer");
-        const historySection = document.getElementById("historySection");
+        function generateCalendar(year) {
+            const mainContainer = document.getElementById("calendar");
+            const historyContainer = document.getElementById("historyContainer");
+            const historySection = document.getElementById("historySection");
 
-        let hasHistoryMonths = false;
-
-        for (let m = 0; m < 12; m++) {
-            const monthCard = document.createElement("div");
-            monthCard.className = "month-card";
-
-            const title = document.createElement("div");
-            title.className = "month-title";
+            mainContainer.innerHTML = "";
+            historyContainer.innerHTML = "";
             
-            const monthNameSpan = document.createElement("span");
-            monthNameSpan.innerText = namaBulan[m];
-            title.appendChild(monthNameSpan);
+            const currentYearHolidays = holidaysDatabase[year] || {};
+            const holidayKeys = Object.keys(currentYearHolidays);
 
-            const grid = document.createElement("div");
-            grid.className = "days-grid";
+            const wfhDates = new Set();
+            let loopDate = new Date("2026-05-12");
+            wfhDates.add("2026-05-12");
 
-            namaHari.forEach(h => {
-                const dayNameDiv = document.createElement("div");
-                dayNameDiv.className = "day-name";
-                if (h === "Sab" || h === "Min") {
-                    dayNameDiv.classList.add("weekend-name");
+            let wfhCounter = 0;
+            while (loopDate.getFullYear() <= 2027) {
+                loopDate.setDate(loopDate.getDate() + 1);
+                if (loopDate.getFullYear() > 2027) break;
+                const dateStr = loopDate.toISOString().split('T')[0];
+                const dayOfWeek = loopDate.getDay();
+                
+                const loopYear = loopDate.getFullYear();
+                const yearHolidays = holidaysDatabase[loopYear] || {};
+                
+                if (dayOfWeek !== 0 && dayOfWeek !== 6 && !Object.keys(yearHolidays).includes(dateStr)) {
+                    wfhCounter++;
+                    if (wfhCounter === 4) { wfhDates.add(dateStr); wfhCounter = 0; }
                 }
-                dayNameDiv.innerText = h;
-                grid.appendChild(dayNameDiv);
-            });
-
-            let firstDay = new Date(2026, m, 1).getDay();
-            let shiftEmptySlots = firstDay === 0 ? 6 : firstDay - 1; 
-
-            const totalDays = new Date(2026, m + 1, 0).getDate();
-
-            for (let i = 0; i < shiftEmptySlots; i++) {
-                const emptyDiv = document.createElement("div");
-                emptyDiv.className = "day empty";
-                grid.appendChild(emptyDiv);
             }
 
-            const currentMonthHolidays = [];
-            let weekdayHolidayCount = 0; 
+            loopDate = new Date("2026-05-12");
+            wfhCounter = 0;
+            while (loopDate.getFullYear() >= 2026) {
+                loopDate.setDate(loopDate.getDate() - 1);
+                if (loopDate.getFullYear() < 2026) break;
+                const dateStr = loopDate.toISOString().split('T')[0];
+                const dayOfWeek = loopDate.getDay();
+                
+                const loopYear = loopDate.getFullYear();
+                const yearHolidays = holidaysDatabase[loopYear] || {};
 
-            for (let d = 1; d <= totalDays; d++) {
-                const dayDiv = document.createElement("div");
-                dayDiv.className = "day";
-                dayDiv.innerText = d;
-
-                const checkDate = new Date(2026, m, d);
-                const offset = checkDate.getTimezoneOffset();
-                const localDate = new Date(checkDate.getTime() - (offset * 60 * 1000));
-                const dateStr = localDate.toISOString().split('T')[0];
-                const dayOfWeek = checkDate.getDay();
-
-                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-                const isRedDay = holidayKeys.includes(dateStr);
-
-                if (isRedDay) {
-                    if (isWeekend) {
-                        dayDiv.classList.add("weekend"); // PERUBAHAN: Menjadi abu-abu gelap jika jatuh di sabtu/minggu
-                        currentMonthHolidays.push({ tgl: d, nama: holidays2026[dateStr], type: "weekend" });
-                    } else {
-                        dayDiv.classList.add("holiday"); // PERUBAHAN: Menjadi MERAH jika jatuh di senin-jumat
-                        weekdayHolidayCount++; 
-                        currentMonthHolidays.push({ tgl: d, nama: holidays2026[dateStr], type: "holiday" });
-                    }
-                } else if (wfhDates.has(dateStr)) {
-                    dayDiv.classList.add("wfh");
-                    if (isWeekend) dayDiv.classList.add("weekend");
-                } else if (isWeekend) {
-                    dayDiv.classList.add("weekend");
+                if (dayOfWeek !== 0 && dayOfWeek !== 6 && !Object.keys(yearHolidays).includes(dateStr)) {
+                    wfhCounter++;
+                    if (wfhCounter === 4) { wfhDates.add(dateStr); wfhCounter = 0; }
                 }
-
-                if (dateStr === stringHariIni) {
-                    dayDiv.classList.add("today");
-                }
-
-                grid.appendChild(dayDiv);
             }
 
-            // Tag hitung total libur nasional kerja (Merah)
-            const countTag = document.createElement("span");
-            countTag.className = "holiday-count-tag";
-            countTag.innerText = `${weekdayHolidayCount} Libur`; 
-            title.appendChild(countTag);
-            
-            monthCard.appendChild(title);
-            monthCard.appendChild(grid);
+            let hasHistoryMonths = false;
 
-            if (currentMonthHolidays.length > 0) {
-                const listDiv = document.createElement("div");
-                listDiv.className = "holiday-list";
+            for (let m = 0; m < 12; m++) {
+                const monthCard = document.createElement("div");
+                monthCard.className = "month-card";
 
-                const listTitle = document.createElement("div");
-                listTitle.className = "holiday-title";
-                listTitle.innerText = "Hari Libur";
-                listDiv.appendChild(listTitle);
+                // Tambahkan kelas khusus "current-month" jika ini adalah bulan berjalan di tahun berjalan
+                if (year === tahunHariIni && m === bulanHariIni) {
+                    monthCard.classList.add("current-month");
+                }
 
-                currentMonthHolidays.forEach(item => {
-                    const itemDiv = document.createElement("div");
-                    itemDiv.className = "holiday-item";
+                const title = document.createElement("div");
+                title.className = "month-title";
+                
+                const monthNameSpan = document.createElement("span");
+                monthNameSpan.innerText = namaBulan[m];
+                title.appendChild(monthNameSpan);
 
-                    const numDiv = document.createElement("div");
-                    numDiv.className = "holiday-day-num";
-                    if (item.type === "weekend") {
-                        numDiv.classList.add("is-weekend");
-                    } else {
-                        numDiv.classList.add("is-holiday");
-                    }
-                    numDiv.innerText = item.tgl;
+                const grid = document.createElement("div");
+                grid.className = "days-grid";
 
-                    const nameDiv = document.createElement("div");
-                    nameDiv.className = "holiday-name";
-                    nameDiv.innerText = item.nama;
-
-                    itemDiv.appendChild(numDiv);
-                    itemDiv.appendChild(nameDiv);
-                    listDiv.appendChild(itemDiv);
+                namaHari.forEach(h => {
+                    const dayNameDiv = document.createElement("div");
+                    dayNameDiv.className = "day-name";
+                    dayNameDiv.innerText = h;
+                    grid.appendChild(dayNameDiv);
                 });
 
-                monthCard.appendChild(listDiv);
+                let firstDay = new Date(year, m, 1).getDay();
+                let shiftEmptySlots = firstDay === 0 ? 6 : firstDay - 1; 
+                
+                const prevMonthTotalDays = new Date(year, m, 0).getDate();
+                for (let i = shiftEmptySlots - 1; i >= 0; i--) {
+                    const adjDayDiv = document.createElement("div");
+                    adjDayDiv.className = "day adjacent-month";
+                    adjDayDiv.innerText = prevMonthTotalDays - i;
+                    grid.appendChild(adjDayDiv);
+                }
+
+                const totalDays = new Date(year, m + 1, 0).getDate();
+                const currentMonthHolidays = [];
+                let weekdayHolidayCount = 0; 
+
+                for (let d = 1; d <= totalDays; d++) {
+                    const dayDiv = document.createElement("div");
+                    dayDiv.className = "day";
+                    dayDiv.innerText = d;
+
+                    const checkDate = new Date(year, m, d);
+                    const offset = checkDate.getTimezoneOffset();
+                    const localDate = new Date(checkDate.getTime() - (offset * 60 * 1000));
+                    const dateStr = localDate.toISOString().split('T')[0];
+                    const dayOfWeek = checkDate.getDay();
+
+                    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                    const isRedDay = holidayKeys.includes(dateStr);
+
+                    if (isRedDay) {
+                        if (isWeekend) {
+                            dayDiv.classList.add("weekend");
+                            currentMonthHolidays.push({ tgl: d, nama: currentYearHolidays[dateStr], type: "weekend" });
+                        } else {
+                            dayDiv.classList.add("holiday");
+                            weekdayHolidayCount++; 
+                            currentMonthHolidays.push({ tgl: d, nama: currentYearHolidays[dateStr], type: "holiday" });
+                        }
+                    } else if (wfhDates.has(dateStr)) {
+                        dayDiv.classList.add("wfh");
+                        if (isWeekend) dayDiv.classList.add("weekend");
+                    } else if (isWeekend) {
+                        dayDiv.classList.add("weekend");
+                    }
+
+                    if (dateStr === stringHariIni) {
+                        dayDiv.classList.add("today");
+                    }
+
+                    grid.appendChild(dayDiv);
+                }
+
+                let totalSlotsUsed = shiftEmptySlots + totalDays;
+                let nextMonthPadding = totalSlotsUsed % 7 === 0 ? 0 : 7 - (totalSlotsUsed % 7);
+                
+                if (totalSlotsUsed + nextMonthPadding <= 35) {
+                    nextMonthPadding += 7; 
+                }
+
+                for (let nextDay = 1; nextDay <= nextMonthPadding; nextDay++) {
+                    const adjDayDiv = document.createElement("div");
+                    adjDayDiv.className = "day adjacent-month";
+                    adjDayDiv.innerText = nextDay;
+                    grid.appendChild(adjDayDiv);
+                }
+
+                const countTag = document.createElement("span");
+                countTag.className = "holiday-count-tag";
+                countTag.innerText = `${weekdayHolidayCount} Libur`; 
+                title.appendChild(countTag);
+                
+                monthCard.appendChild(title);
+                monthCard.appendChild(grid);
+
+                if (currentMonthHolidays.length > 0) {
+                    const listDiv = document.createElement("div");
+                    listDiv.className = "holiday-list";
+
+                    const listTitle = document.createElement("div");
+                    listTitle.className = "holiday-title";
+                    listTitle.innerText = "Hari Libur";
+                    listDiv.appendChild(listTitle);
+
+                    currentMonthHolidays.forEach(item => {
+                        const itemDiv = document.createElement("div");
+                        itemDiv.className = "holiday-item";
+
+                        const numDiv = document.createElement("div");
+                        numDiv.className = "holiday-day-num";
+                        if (item.type === "weekend") numDiv.classList.add("is-weekend");
+                        else numDiv.classList.add("is-holiday");
+                        numDiv.innerText = item.tgl;
+
+                        const nameDiv = document.createElement("div");
+                        nameDiv.className = "holiday-name";
+                        nameDiv.innerText = item.nama;
+
+                        itemDiv.appendChild(numDiv);
+                        itemDiv.appendChild(nameDiv);
+                        listDiv.appendChild(itemDiv);
+                    });
+
+                    monthCard.appendChild(listDiv);
+                }
+
+                if (year === tahunHariIni && m < infoWaktuSekarang.getMonth() - 1) {
+                    historyContainer.appendChild(monthCard);
+                    hasHistoryMonths = true;
+                } else if (year < tahunHariIni) {
+                    historyContainer.appendChild(monthCard);
+                    hasHistoryMonths = true;
+                } else {
+                    mainContainer.appendChild(monthCard);
+                }
             }
 
-            if (m < bulanSekarang - 1) {
-                historyContainer.appendChild(monthCard);
-                hasHistoryMonths = true;
+            if (hasHistoryMonths) {
+                historySection.style.display = "block";
             } else {
-                mainContainer.appendChild(monthCard);
+                historySection.style.display = "none";
+                historySection.classList.remove("open");
+                historyContainer.style.display = "none";
             }
         }
 
-        if (!hasHistoryMonths) {
-            historySection.style.display = "none";
+        function switchYear(year) {
+            currentSelectedYear = year;
+            document.querySelectorAll(".year-btn").forEach(btn => {
+                if(btn.innerText == year) btn.classList.add("active");
+                else btn.classList.remove("active");
+            });
+            generateCalendar(year);
         }
 
-        // Logika Interaksi Dropdown Akordeon
+        generateCalendar(currentSelectedYear);
+
         const historyToggleBtn = document.getElementById("historyToggleBtn");
         historyToggleBtn.addEventListener("click", () => {
+            const historySection = document.getElementById("historySection");
+            const historyContainer = document.getElementById("historyContainer");
             const isOpen = historySection.classList.contains("open");
+            
             if (isOpen) {
                 historySection.classList.remove("open");
                 historyContainer.style.display = "none";
@@ -554,7 +641,6 @@
             }
         });
 
-        // Fitur Toggle Dark / Light Mode
         const toggleBtn = document.getElementById("themeToggle");
         toggleBtn.addEventListener("click", () => {
             const currentTheme = document.documentElement.getAttribute("data-theme");
