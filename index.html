@@ -29,7 +29,7 @@
 
             /* TEMA TERANG MATTE */
             [data-theme="light"] {
-                --bg-color: #f1f3f5;
+                --bg-color: #fbfcfa;
                 --card-bg: #f4f3ee;
                 --card-border: #b1ada1;
                 --current-month-border: #a38238; /* Kuning Tua Redup */
@@ -41,7 +41,7 @@
                 --today-border: #a38238; /* Kuning Tua Redup */
                 --divider-color: #e2e8f0;
                 --dropdown-bg: #e2e8f0;
-                --nav-bg: #e2e8f0;
+                --nav-bg: #f4f3ee;
                 --nav-active: #bfa15f;
                 --nav-active-text: #ffffff;
                 --adjacent-color: #cbd5e1;
@@ -101,39 +101,38 @@
             }
 
             .year-navigator {
-                display: inline-flex;
+                display: flex;
                 align-items: center;
-                background-color: var(--nav-bg);
-                padding: 3px;
-                border-radius: 10px; /* Lebih Melengkung */
-                margin-bottom: 12px;
-                border: 1px solid var(--card-border);
-                gap: 10px;
+                justify-content: space-between;
+                width: 100%;
+                max-width: 1200px; /* Menyesuaikan lebar maksimal kalender */
+                margin: 0 auto 20px auto;
+                gap: 15px;
             }
 
             .year-arrow-btn {
-                background: none;
-                border: none;
+                background: var(--card-bg);
                 color: var(--text-color);
+                border: 1px solid var(--card-border);
+                font-family: "Fira Code", monospace;
                 font-size: 14px;
+                font-weight: 500;
                 cursor: pointer;
-                padding: 6px 12px;
-                border-radius: 6px; /* Lebih Melengkung */
-                transition: background-color 0.15s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                padding: 8px 16px;
+                border-radius: 8px;
+                transition: all 0.15s ease;
             }
 
             .year-arrow-btn:hover {
-                background-color: var(--card-border);
+                background-color: var(--dropdown-bg);
+                border-color: var(--today-border);
             }
 
             #yearDisplay {
-                font-size: 15px;
-                font-weight: 700;
-                min-width: 50px;
-                text-align: center;
+                font-family:
+                    "Ledger", "Times New Roman", serif; /* Menggunakan font serif sesuai gambar */
+                font-size: 26px; /* Lebih besar dan elegan */
+                font-weight: 400;
                 letter-spacing: 0.5px;
             }
 
@@ -321,6 +320,7 @@
                 ) !important; /* Angka mengikuti warna background agar kontras */
                 font-weight: 700 !important; /* Tanggal hari ini bold */
                 border: none;
+                border-radius: 50% !important; /* Mengubah kotak menjadi bulat sempurna */
             }
 
             .today.wfh::after {
@@ -402,15 +402,23 @@
     <body>
         <header>
             <button class="theme-toggle" id="themeToggle">☀️</button>
-            <h1>CALENDAR PRO</h1>
+            <h1>Kalender+</h1>
 
             <div class="year-navigator">
-                <button class="year-arrow-btn" onclick="adjustYear(-1)">
-                    ◀
+                <button
+                    class="year-arrow-btn"
+                    id="prevYearBtn"
+                    onclick="adjustYear(-1)"
+                >
+                    ← 2025
                 </button>
                 <span id="yearDisplay">2026</span>
-                <button class="year-arrow-btn" onclick="adjustYear(1)">
-                    ▶
+                <button
+                    class="year-arrow-btn"
+                    id="nextYearBtn"
+                    onclick="adjustYear(1)"
+                >
+                    2027 →
                 </button>
             </div>
 
@@ -840,6 +848,21 @@
                 }
             }
 
+            function updateNavigatorButtons(year) {
+                const prevBtn = document.getElementById("prevYearBtn");
+                const nextBtn = document.getElementById("nextYearBtn");
+
+                // Mengatur teks tombol dinamis berdasarkan tahun aktif
+                prevBtn.innerText = `← ${year - 1}`;
+                nextBtn.innerText = `${year + 1} →`;
+
+                // Opsional: Sembunyikan atau matikan tombol jika di luar batas database (2025-2028)
+                prevBtn.style.visibility =
+                    year - 1 >= 2025 ? "visible" : "hidden";
+                nextBtn.style.visibility =
+                    year + 1 <= 2028 ? "visible" : "hidden";
+            }
+
             function adjustYear(offset) {
                 if (
                     currentSelectedYear + offset >= 2025 &&
@@ -848,9 +871,13 @@
                     currentSelectedYear += offset;
                     document.getElementById("yearDisplay").innerText =
                         currentSelectedYear;
+                    updateNavigatorButtons(currentSelectedYear); // Update teks tombolnya
                     generateCalendar(currentSelectedYear);
                 }
             }
+
+            // Panggil fungsi ini sekali di awal (taruh tepat di bawah generateCalendar(currentSelectedYear) pertama kali)
+            updateNavigatorButtons(currentSelectedYear);
 
             generateCalendar(currentSelectedYear);
 
