@@ -31,6 +31,7 @@
                 --nav-active: #bfa15f;
                 --nav-active-text: #ffffff;
                 --adjacent-color: #3a3a3a;
+                --badge-bg: #2d2d2d;
             }
 
             /* TEMA TERANG MATTE */
@@ -51,6 +52,7 @@
                 --nav-active: #bfa15f;
                 --nav-active-text: #ffffff;
                 --adjacent-color: #cbd5e1;
+                --badge-bg: #e2e8f0;
             }
 
             body {
@@ -163,7 +165,7 @@
                 justify-content: center;
                 gap: 20px;
                 font-size: 13px;
-                margin-bottom: 10px;
+                margin-bottom: 15px;
                 flex-wrap: wrap;
                 color: var(--text-muted);
             }
@@ -185,6 +187,90 @@
                 height: 6px;
                 background-color: var(--wfh-dot);
                 border-radius: 50%;
+            }
+
+            /* CSS INSIGHT LONG WEEKEND & MINIMIZE */
+            .insights-section {
+                max-width: 1200px;
+                margin: 0 auto 25px auto;
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 12px;
+                padding: 15px;
+                box-sizing: border-box;
+                transition: all 0.3s ease;
+            }
+
+            .insights-header {
+                user-select: none;
+            }
+
+            .insights-title {
+                font-size: 13px;
+                font-weight: 700;
+                color: var(--weekend-color);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .insights-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 12px;
+            }
+
+            .insights-section.collapsed .insights-grid {
+                display: none !important;
+            }
+
+            .insight-card {
+                background: var(--bg-color);
+                border: 1px solid var(--card-border);
+                padding: 10px 12px;
+                border-radius: 8px;
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .insight-tag {
+                display: inline-block;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 10px;
+                font-weight: 700;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+            }
+
+            .tag-lw {
+                background-color: #2e4a23;
+                color: #bffc62;
+            }
+            [data-theme="light"] .tag-lw {
+                background-color: #e2fcd4;
+                color: #3b6611;
+            }
+
+            .tag-hp {
+                background-color: #54232d;
+                color: #ff6186;
+            }
+            [data-theme="light"] .tag-hp {
+                background-color: #ffe3e8;
+                color: #b51236;
+            }
+
+            .insight-date {
+                font-weight: 700;
+                color: var(--text-color);
+            }
+
+            .insight-desc {
+                color: var(--text-muted);
+                margin-top: 2px;
             }
 
             .history-section {
@@ -303,9 +389,7 @@
             }
 
             .weekend {
-                color: var(
-                    --weekend-color
-                ) !important; /* Memastikan weekend tetap warna kuning */
+                color: var(--weekend-color) !important;
             }
 
             .holiday {
@@ -331,7 +415,7 @@
                 color: var(--bg-color) !important;
                 font-weight: 700 !important;
                 border: none;
-                border-radius: 50% !important; /* Bentuk Bulat */
+                border-radius: 50% !important;
                 z-index: 10;
             }
 
@@ -406,6 +490,10 @@
 
                 .history-container,
                 .calendar-container {
+                    grid-template-columns: 1fr;
+                }
+
+                .insights-grid {
                     grid-template-columns: 1fr;
                 }
             }
@@ -488,6 +576,38 @@
                 </div>
             </div>
         </header>
+
+        <div
+            class="insights-section"
+            id="insightsSection"
+            style="display: none"
+        >
+            <div
+                class="insights-header"
+                onclick="toggleInsights()"
+                style="
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 12px;
+                "
+            >
+                <div class="insights-title" style="margin-bottom: 0">
+                    💡 Info Libur Panjang Strategis (≥ 5 Hari)
+                </div>
+                <span
+                    id="insightsToggleArrow"
+                    style="
+                        font-size: 11px;
+                        color: var(--text-muted);
+                        font-family: monospace;
+                    "
+                    >▲ MINIMIZE</span
+                >
+            </div>
+            <div class="insights-grid" id="insightsGrid"></div>
+        </div>
 
         <div class="history-section" id="historySection">
             <button class="history-toggle-btn" id="historyToggleBtn">
@@ -597,7 +717,7 @@
             );
             const stringHariIni = `${tahunHariIni}-${String(bulanHariIni + 1).padStart(2, "0")}-${tanggalHariIni}`;
 
-            // Inisialisasi Tema dari LocalStorage saat halaman pertama kali dibuka
+            // Inisialisasi Tema dari LocalStorage
             const savedTheme = localStorage.getItem("calendar-theme");
             const toggleBtn = document.getElementById("themeToggle");
             if (savedTheme === "light") {
@@ -606,6 +726,156 @@
             } else {
                 document.documentElement.removeAttribute("data-theme");
                 toggleBtn.innerText = "☀️";
+            }
+
+            // Inisialisasi Status Minimize/Expand dari LocalStorage
+            const savedInsightsState =
+                localStorage.getItem("insights-collapsed");
+            const insightsSection = document.getElementById("insightsSection");
+            const insightsArrow = document.getElementById(
+                "insightsToggleArrow",
+            );
+            if (savedInsightsState === "true") {
+                insightsSection.classList.add("collapsed");
+                insightsArrow.innerText = "▼ EXPAND";
+            }
+
+            // FUNGSI BUKA/TUTUP SECTION INSIGHTS (DENGAN LOCALSTORAGE)
+            function toggleInsights() {
+                const section = document.getElementById("insightsSection");
+                const arrow = document.getElementById("insightsToggleArrow");
+                const isCollapsed = section.classList.toggle("collapsed");
+
+                if (isCollapsed) {
+                    arrow.innerText = "▼ EXPAND";
+                    localStorage.setItem("insights-collapsed", "true");
+                } else {
+                    arrow.innerText = "▲ MINIMIZE";
+                    localStorage.setItem("insights-collapsed", "false");
+                }
+            }
+
+            // FUNGSI DETEKSI LIBUR PANJANG ≥ 5 HARI
+            function calculateInsights(year) {
+                const insightsGrid = document.getElementById("insightsGrid");
+                insightsGrid.innerHTML = "";
+
+                const yearData = holidaysDatabase[year] || {};
+                const keys = Object.keys(yearData).sort();
+                let hasInsight = false;
+
+                const totalHolidaysInYear = new Set(keys);
+
+                keys.forEach((dateStr) => {
+                    const current = new Date(dateStr);
+                    const dayOfWeek = current.getDay();
+                    const labelBulan = namaBulan[current.getMonth()];
+                    const tglNum = current.getDate();
+
+                    let type = "";
+                    let desc = "";
+                    let totalHariLibur = 0;
+
+                    if (dayOfWeek === 5) {
+                        const kamisStr = new Date(
+                            current.getTime() - 24 * 60 * 60 * 1000,
+                        )
+                            .toISOString()
+                            .split("T")[0];
+                        const seninStr = new Date(
+                            current.getTime() + 3 * 24 * 60 * 60 * 1000,
+                        )
+                            .toISOString()
+                            .split("T")[0];
+
+                        if (
+                            totalHolidaysInYear.has(kamisStr) ||
+                            totalHolidaysInYear.has(seninStr)
+                        ) {
+                            type = "lw";
+                            totalHariLibur = 5;
+                            desc = `Rangkaian libur akhir pekan panjang beruntun. Total <b>${totalHariLibur} hari libur</b> tanpa potong cuti!`;
+                        }
+                    } else if (dayOfWeek === 1) {
+                        const jumatStr = new Date(
+                            current.getTime() - 3 * 24 * 60 * 60 * 1000,
+                        )
+                            .toISOString()
+                            .split("T")[0];
+                        const selasaStr = new Date(
+                            current.getTime() + 24 * 60 * 60 * 1000,
+                        )
+                            .toISOString()
+                            .split("T")[0];
+
+                        if (
+                            totalHolidaysInYear.has(jumatStr) ||
+                            totalHolidaysInYear.has(selasaStr)
+                        ) {
+                            type = "lw";
+                            totalHariLibur = 5;
+                            desc = `Rangkaian libur akhir pekan panjang beruntun. Total <b>${totalHariLibur} hari libur</b> tanpa potong cuti!`;
+                        }
+                    } else if (dayOfWeek === 4) {
+                        type = "hp";
+                        totalHariLibur = 5;
+                        desc = `Hari Kejepit di hari <b>Kamis</b>. Cukup ambil 1 hari cuti di hari Jumat untuk menikmati total <b>4-5 hari libur beruntun</b> (tergantung weekend)!`;
+                    } else if (dayOfWeek === 2) {
+                        type = "hp";
+                        totalHariLibur = 5;
+                        desc = `Hari Kejepit di hari <b>Selasa</b>. Cukup ambil 1 hari cuti di hari Senin untuk menikmati total <b>4-5 hari libur beruntun</b> (tergantung weekend)!`;
+                    }
+
+                    if (
+                        yearData[dateStr]
+                            .toLowerCase()
+                            .includes("idul fitri") &&
+                        !dateStr.includes("-03-21")
+                    ) {
+                        if (
+                            dateStr.includes("2026-03-20") ||
+                            dateStr.includes("2027-03-10")
+                        ) {
+                            type = "lw";
+                            totalHariLibur = 9;
+                            desc = `Libur Raya & Cuti Bersama <b>Idul Fitri</b>. Total jatah libur panjang hingga <b>${totalHariLibur} hari</b>!`;
+                        } else {
+                            type = "";
+                        }
+                    }
+
+                    if (type !== "" && totalHariLibur >= 5) {
+                        hasInsight = true;
+                        const card = document.createElement("div");
+                        card.className = "insight-card";
+
+                        const badge = document.createElement("span");
+                        badge.className = `insight-tag ${type === "lw" ? "tag-lw" : "tag-hp"}`;
+                        badge.innerText =
+                            type === "lw"
+                                ? `Long Weekend (${totalHariLibur} Hari)`
+                                : `Strategi Cuti (${totalHariLibur} Hari)`;
+
+                        const dateTitle = document.createElement("div");
+                        dateTitle.className = "insight-date";
+                        dateTitle.innerHTML = `${tglNum} ${labelBulan} - <span style="color: var(--text-muted); font-weight:400; font-size:11px;">${yearData[dateStr]}</span>`;
+
+                        const description = document.createElement("div");
+                        description.className = "insight-desc";
+                        description.innerHTML = desc;
+
+                        card.appendChild(badge);
+                        card.appendChild(dateTitle);
+                        card.appendChild(description);
+                        insightsGrid.appendChild(card);
+                    }
+                });
+
+                if (hasInsight) {
+                    insightsSection.style.display = "block";
+                } else {
+                    insightsSection.style.display = "none";
+                }
             }
 
             function updateHolidaySummary(year) {
@@ -627,6 +897,7 @@
 
             function generateCalendar(year) {
                 updateHolidaySummary(year);
+                calculateInsights(year);
 
                 const mainContainer = document.getElementById("calendar");
                 const historyContainer =
@@ -690,7 +961,7 @@
                 }
 
                 let hasHistoryMonths = false;
-                const isMobile = window.innerWidth <= 768; // Deteksi versi HP vs Laptop
+                const isMobile = window.innerWidth <= 768;
 
                 for (let m = 0; m < 12; m++) {
                     const monthCard = document.createElement("div");
@@ -750,7 +1021,6 @@
 
                         if (isRedDay) {
                             if (isWeekend) {
-                                // JIKA HARI LIBUR JATUH DI SABTU/MINGGU -> DIKEMBALIKAN JADI WARNA KUNING (WEEKEND)
                                 dayDiv.classList.add("weekend");
                                 currentMonthHolidays.push({
                                     tgl: d,
@@ -839,7 +1109,6 @@
                         monthCard.appendChild(listDiv);
                     }
 
-                    // KONDISI PENYARINGAN KANVAS UTAMA VS DROPDOWN (LOGIKA HP VS LAPTOP)
                     if (year === tahunHariIni) {
                         if (isMobile) {
                             if (m < infoWaktuSekarang.getMonth()) {
@@ -899,20 +1168,15 @@
                 }
             }
 
-            // Jalankan inisialisasi awal kalender
             updateNavigatorButtons(currentSelectedYear);
             generateCalendar(currentSelectedYear);
 
-            // Simpan lebar layar awal
             let lastWidth = window.innerWidth;
-
             window.addEventListener("resize", () => {
-                // Cek apakah lebar layarnya benar-benar berubah
                 if (window.innerWidth !== lastWidth) {
-                    lastWidth = window.innerWidth; // Update lebar terbaru
-                    generateCalendar(currentSelectedYear); // Jalankan render ulang
+                    lastWidth = window.innerWidth;
+                    generateCalendar(currentSelectedYear);
                 }
-                // Jika lebarnya sama (hanya tinggi yang berubah karena address bar HP), abaikan saja.
             });
 
             const historyToggleBtn =
